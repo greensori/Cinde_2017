@@ -106,12 +106,10 @@ void stepmov(){
       vvelo = vvelo - vaccel;
     }
   }
-  
-
-    if (vEna > 0) {
-      digitalWrite(ENA, LOW);
-    }
-    else if (vEna < 0) {
-      digitalWrite(ENA, HIGH);
-      }    
+  if (vEna > 0) {
+    digitalWrite(ENA, LOW);
+  }
+  else if (vEna < 0) {
+    digitalWrite(ENA, HIGH);
+  }    
 }
