@@ -2,6 +2,7 @@
 stepper motor control examples
 
 stepper setting table
+
 *nema1.7 stepper 3.7:1 gear ratio ( a - b- c- d)
 minimun step = 2
 360step = almost 180'
