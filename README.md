@@ -1,5 +1,5 @@
 # totalstepper
-stepper motor control examples
+stepper motor control setting
 
 stepper setting table
 
