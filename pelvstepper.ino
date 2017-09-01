@@ -3,6 +3,7 @@
 // Serial sending 0 ~ 9, a ~ z
 // char data latency is 0.11 ~ 0.15 sec
 // function stepmov has 7 value
+// setting the maximum speed and steps on start states
 
 
 #define ENA     13
@@ -29,11 +30,24 @@ void setup() {
 
 
 void loop() {
-  if(Serial.available()){
+  if(Serial.available() > 0){
     ch = Serial.read();
     charconverter(ch);
+    
   }
 }
+
+// arter charconverter, function must decide to select between two options
+void treestepper() {
+    lauchster();
+    terminatestep();
+    if (Serial.avilable() >) {
+    } else {
+    steadystep();
+    }
+}
+
+a ~ t : 
 
 //x = start, y = process, z = terminal
 //w = DIR
@@ -63,12 +77,14 @@ void charconverter(char conv){
 
 
 //(start, direction, stepcount, velocity, maxcimun speed, accelalte value)
-//new
+//u ~ z : lauchphase
+//U ~ Z : terminal phase
 void lauchstep() {
-  if (vEna == 1) {
+  if (vEna == 'u') {
   digitalWrite(ENA, HIGH);
   } else if (vEna == -1) {
   digitalWrite(ENA, LOW);
+    
   }
 }
 
@@ -80,8 +96,8 @@ void dirstep() {
   }
 }
 
-void stepmov() {
-
+void stepmov(){
+    
 }
 
 void stepmov(){
