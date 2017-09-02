@@ -35,22 +35,20 @@ void loop() {
 }}
 
 void charconverter() {
-  if (ch == 'a') {
+  if (ch == 'q') {
     vstep[0] = 110;
-    vstep[1] = 1500;
-    vstep[2] = 470;
-  } else if (ch == 'A') {
-    vstep[0] = 110;
-    vstep[1] = 1500;
-    vstep[2] = 470;
-  } else if (ch == 'b') {
-    vstep[0] = 20;
-  } else if (ch == 'c') {
-    vstep[0] = 1;
-    vstep[1] = 5000;
+  } else if (ch == 'w') {
+    vstep[0] = 30;
+  } else if (ch == 'e') {
+    vstep[0] = 2;
   } else if (ch == 'd') {
-    
-  }
+    vstep[0] = 1;
+  } else if (ch == 'e') {
+  } else if (ch == 'f') {
+    vstep[0] = 110;
+  } else if (ch == 'g') {
+    vstep[0] = 20;
+  }   
 }
 
 void stepset() {
@@ -58,36 +56,31 @@ void stepset() {
     digitalWrite(DIR, LOW);
     vstep[3] = 0;
   } else if(ch == '1') {
-    digitalWrite(DIR, LOW);
     vstep[3] = 1;
   } else if ( ch == '2') {
-    digitalWrite(DIR, LOW);
     vstep[3] = 2;
   } else if (ch == '3') {
-    digitalWrite(DIR, LOW);
     vstep[3] = 3;
   } else if (ch == '4') {
-    digitalWrite(DIR, LOW);
     vstep[3] = 4;
   } else if (ch == '5') {
     digitalWrite(DIR, HIGH);
     vstep[3] = 0;
   } else if (ch == '6') {
-    digitalWrite(DIR, HIGH);
     vstep[3] = -1;
   } else if (ch == '7') {
-    digitalWrite(DIR, HIGH);
     vstep[3] = -2;
   } else if (ch == '8') {
-    digitalWrite(DIR, HIGH);
     vstep[3] = -3;
   } else if (ch == '9') {
-    digitalWrite(DIR, HIGH);
     vstep[3] = -4;
   }    
 }
 
 void  stepmov() {    
+  if (vstep[0] <= 1) {
+    vstep[0] = 2;
+  }
   for (i = 0; i < vstep[0]; i++) {
     digitalWrite(STEP, HIGH);
     delayMicroseconds(vstep[1]);
@@ -99,6 +92,5 @@ void  stepmov() {
       vstep[1] = 470;
     }
   }
-  Serial.println (vstep[1]);
   digitalWrite(ENA, HIGH);
 }
