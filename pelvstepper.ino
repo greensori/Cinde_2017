@@ -27,26 +27,34 @@ void loop() {
     ch = Serial.read();
     charconverter();
     stepmov();
-  } else {    
   }
 }
 
 void charconverter() {
   if (ch == 'a') {
-  vstep[0] = 300;
-  vstep[1] = 800;
-  vstep[2] = 500;
-  vstep[3] = -1;
+    vstep[0] = 110;
+    vstep[1] = 1500;
+    vstep[2] = 470;
+    vstep[3] = 1;
+  } else if (ch == 'A') {
+    vstep[0] = 110;
+    vstep[1] = 1500;
+    vstep[2] = 470;
+    vstep[3] = -1; 
+  } else if (ch == 'b') {
+    vstep[0] = 20;
+  } else if (ch == 'c') {
+    vstep[0] = 2;
+    vstep[1] = 5000;
+  } else if (ch == 'd') {
+    
   }
-  if 
 }
 
 
 void  stepmov() {
-    Serial.println("stepgo");
     if (97<= ch && ch <= 122) {
      digitalWrite(DIR, LOW);
-     Serial.println ("negativemov");
     } else if (65 <= ch && ch<=90) {
       digitalWrite(DIR, HIGH);
     }
@@ -60,5 +68,6 @@ void  stepmov() {
       vstep[1] = vstep[1] - vstep[3];
     }
   }
+  Serial.println (vstep[1]);
   digitalWrite(ENA, HIGH);
 }
