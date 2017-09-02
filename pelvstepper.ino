@@ -7,7 +7,7 @@ char ch;
 int count;
 int i;
 //steps, rpm, max, acc
-int vstep[4];
+int vstep[4] = {110, 900, 470, 0};
 
 
 
@@ -18,54 +18,85 @@ void setup() {
     pinMode(DIR, OUTPUT);
     //stepper off
     digitalWrite(ENA, HIGH);
-}
+    digitalWrite(DIR, HIGH);
+    }
 
 
 void loop() {
   if (Serial.available() > 0) {
-    digitalWrite(ENA, LOW);
     ch = Serial.read();
-    charconverter();
-    stepmov();
+    if (48 <= ch && ch <= 57) {
+      stepset();
+    } else {
+      digitalWrite(ENA, LOW);
+      charconverter();
+      stepmov();
   }
-}
+}}
 
 void charconverter() {
   if (ch == 'a') {
     vstep[0] = 110;
     vstep[1] = 1500;
     vstep[2] = 470;
-    vstep[3] = 1;
   } else if (ch == 'A') {
     vstep[0] = 110;
     vstep[1] = 1500;
     vstep[2] = 470;
-    vstep[3] = -1; 
   } else if (ch == 'b') {
     vstep[0] = 20;
   } else if (ch == 'c') {
-    vstep[0] = 2;
+    vstep[0] = 1;
     vstep[1] = 5000;
   } else if (ch == 'd') {
     
   }
 }
 
+void stepset() {
+  if (ch == '0') {
+    digitalWrite(DIR, LOW);
+    vstep[3] = 0;
+  } else if(ch == '1') {
+    digitalWrite(DIR, LOW);
+    vstep[3] = 1;
+  } else if ( ch == '2') {
+    digitalWrite(DIR, LOW);
+    vstep[3] = 2;
+  } else if (ch == '3') {
+    digitalWrite(DIR, LOW);
+    vstep[3] = 3;
+  } else if (ch == '4') {
+    digitalWrite(DIR, LOW);
+    vstep[3] = 4;
+  } else if (ch == '5') {
+    digitalWrite(DIR, HIGH);
+    vstep[3] = 0;
+  } else if (ch == '6') {
+    digitalWrite(DIR, HIGH);
+    vstep[3] = -1;
+  } else if (ch == '7') {
+    digitalWrite(DIR, HIGH);
+    vstep[3] = -2;
+  } else if (ch == '8') {
+    digitalWrite(DIR, HIGH);
+    vstep[3] = -3;
+  } else if (ch == '9') {
+    digitalWrite(DIR, HIGH);
+    vstep[3] = -4;
+  }    
+}
 
-void  stepmov() {
-    if (97<= ch && ch <= 122) {
-     digitalWrite(DIR, LOW);
-    } else if (65 <= ch && ch<=90) {
-      digitalWrite(DIR, HIGH);
-    }
-    
+void  stepmov() {    
   for (i = 0; i < vstep[0]; i++) {
     digitalWrite(STEP, HIGH);
     delayMicroseconds(vstep[1]);
     digitalWrite(STEP, LOW);
     delayMicroseconds(vstep[1]);
-    if (vstep[1] > vstep[2]) {
+    if (vstep[1] >= vstep[2]) {
       vstep[1] = vstep[1] - vstep[3];
+    } else {
+      vstep[1] = 470;
     }
   }
   Serial.println (vstep[1]);
