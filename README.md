@@ -18,6 +18,9 @@ speed range = 470 to unlimited
 need to step to reach from 380 to 950 = 1100step
 
 
+// 0 ~ 9 setting acc value
+
+
 
 // need to setting velosity = a~ t
 // uvwxyz
