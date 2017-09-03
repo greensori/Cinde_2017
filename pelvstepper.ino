@@ -8,6 +8,7 @@ int count;
 int i;
 //steps, rpm, max, acc
 int vstep[4] = {110, 900, 470, 0};
+const int limitrpm = 470;
 
 
 
@@ -34,6 +35,10 @@ void loop() {
   }
 }}
 
+void stepsetting() {
+    if vstep   
+}
+
 void charconverter() {
   if (ch == 'q') {
     vstep[0] = 110;
@@ -41,14 +46,22 @@ void charconverter() {
     vstep[0] = 30;
   } else if (ch == 'e') {
     vstep[0] = 2;
-  } else if (ch == 'd') {
-    vstep[0] = 1;
-  } else if (ch == 'e') {
-  } else if (ch == 'f') {
+  } else if (ch == 'r') {
+    vstep[0] = 50;
+  } else if (ch == 't') {
+  } else if (ch == 'u') {
     vstep[0] = 110;
-  } else if (ch == 'g') {
+  } else if (ch == 'i') {
     vstep[0] = 20;
-  }   
+  } else if (ch == 'o') {
+    vstep[0] = 20;
+  } else if (ch == 'p') {
+    vstep[0] = 20;
+  } else if (ch == 'a') {
+    vstep[0] = 20;
+  } else if (ch == 's') {
+    vstep[0] = 20;
+  }
 }
 
 void stepset() {
@@ -89,7 +102,7 @@ void  stepmov() {
     if (vstep[1] >= vstep[2]) {
       vstep[1] = vstep[1] - vstep[3];
     } else {
-      vstep[1] = 470;
+      vstep[1] = limitrpm;
     }
   }
   digitalWrite(ENA, HIGH);
