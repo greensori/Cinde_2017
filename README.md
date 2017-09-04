@@ -1,4 +1,4 @@
-# totalstepper
+# stepper controller
 stepper motor control setting
 
 stepper setting table
