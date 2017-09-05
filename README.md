@@ -56,4 +56,6 @@ when working proc2, another
 
 # structure
 
-
+! ard.write - average sleep(time - stime), serial.read
+ 
+@ ard.
