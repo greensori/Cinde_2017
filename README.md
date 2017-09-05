@@ -36,3 +36,11 @@ atfter getting last speed value
 set initail speed, set random acceleration(port3)
 
 when working proc2, another 
+
+
+##Serial writing latency
+
+* 1byte data (eg. char) = 0.0125 ~ 0.0111 seconds
+
+* integer data = 1.12 ~ 1.2 seconds (Serial.parseInt)
+
