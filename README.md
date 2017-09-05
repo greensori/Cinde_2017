@@ -4,17 +4,28 @@ stepper motor control setting
 stepper setting table
 
 *nema1.7 stepper 3.7:1 gear ratio ( a - b- c- d)
+
 minimun step = 2
+
 360step = almost 180'
+
 idle rpm = 800
+
 speed range = 380 to 950
+
 need to step to reach from 380 to 950 = 1100step
 
+
 *nema1.7 stepper 1:1 gear ratio ( a - c - b - d)
+
 minimun step = 2
+
 110step = almost 180'
+
 idle rpm = all range
+
 speed range = 470 to unlimited
+
 need to step to reach from 380 to 950 = 1100step
 
 
