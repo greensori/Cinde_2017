@@ -9,7 +9,7 @@ minimun step = 2
 
 360step = almost 180'
 
-idle rpm = 800
+idle pulse = 800 microsecond
 
 speed range = 380 to 950
 
@@ -22,7 +22,7 @@ minimun step = 2
 
 110step = almost 180'
 
-idle rpm = all range
+idle pulse = under 4000 microsecond
 
 speed range = 470 to unlimited
 
@@ -49,7 +49,7 @@ when working proc2, another
 
 ##Serial writing latency
 
-* 1byte data (eg. char) = 0.0125 ~ 0.0111 seconds
+* 1byte data (eg. char) = 0.0125 ~ 0.0111 second
 
-* integer data = 1.12 ~ 1.2 seconds (Serial.parseInt)
+* integer data = 1.12 ~ 1.2 second (Serial.parseInt)
 
