@@ -56,6 +56,10 @@ when working proc2, another
 
 # structure
 
-! ard.write - average sleep(time - stime), serial.read
+ard.write - average sleep(time - stime), serial.read
  
-@ ard.
+ard.write(2byte) - proc - serial.read - ard.write(byte)
+
+calculating average inteval times between two ard.write times
+
+between writing times, must receiving ard.read()
