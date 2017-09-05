@@ -1,8 +1,8 @@
-# stepper controller
+# stepping controller
 
-stepper motor control setting
+stepping motor control setting
 
-stepper setting table
+stepping setting table
 
 # nema1.7 stepper 3.7:1 gear ratio ( a - b- c- d)
 
@@ -16,6 +16,7 @@ speed range = 380 to 950
 
 need to step to reach from 380 to 950 = 1100step
 
+ * important dont setting delays after LOW signals on step (just when using planetary geared stepping motor
 
 # nema1.7 stepper 1:1 gear ratio ( a - c - b - d)
 
