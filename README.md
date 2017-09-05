@@ -1,9 +1,10 @@
 # stepper controller
+
 stepper motor control setting
 
 stepper setting table
 
-* nema1.7 stepper 3.7:1 gear ratio ( a - b- c- d)
+# nema1.7 stepper 3.7:1 gear ratio ( a - b- c- d)
 
 minimun step = 2
 
@@ -16,7 +17,7 @@ speed range = 380 to 950
 need to step to reach from 380 to 950 = 1100step
 
 
-* nema1.7 stepper 1:1 gear ratio ( a - c - b - d)
+# nema1.7 stepper 1:1 gear ratio ( a - c - b - d)
 
 minimun step = 2
 
@@ -47,7 +48,7 @@ set initail speed, set random acceleration(port3)
 when working proc2, another 
 
 
-##Serial writing latency
+# Serial writing latency
 
 * 1byte data (eg. char) = 0.0125 ~ 0.0111 second
 
