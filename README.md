@@ -53,3 +53,6 @@ when working proc2, another
 
 * integer data = 1.12 ~ 1.2 second (Serial.parseInt)
 
+# structure
+
+
