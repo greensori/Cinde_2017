@@ -1,4 +1,5 @@
 
+
 #define ENA     13
 #define STEP    9//for step signal
 #define DIR     8//for direction
@@ -32,7 +33,8 @@ void loop() {
       digitalWrite(ENA, LOW);
       charconverter();
       stepmov();
-  }
+    }
+  // else { analog.read(potentiometer)) <- calculating status
 }}
 
 void stepsetting() {
