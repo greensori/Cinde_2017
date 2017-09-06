@@ -1,4 +1,4 @@
-# stepping controller
+# green controller
 
 stepping motor control setting
 
@@ -64,3 +64,31 @@ ard.write(2byte) - proc - serial.read - ard.write(byte)
 calculating average inteval times between two ard.write times
 
 between writing times, must receiving ard.read()
+
+# plan
+
+to install potentiometer on neck position and install gy-91 in top of the head
+
+ordering potentiometer
+
+to calculating idle status values
+
+gy91 will installing center position of frame
+
+python will getting every potentiometer value and alwways makes frame to idle status
+
+1. dueboard will controlling two legs occupy 9digital pins)
+
+2. another due board will getting all information about values from sensors( 8analog pins for 4 gy-91 modules)
+
+
+
+# ordering
+
+1. potientiometer
+
+2. jumping cables
+
+3. bearing pins
+
+4. frame
