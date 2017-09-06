@@ -14,8 +14,9 @@ char ch;
 int count;
 int i;
 //steps, rpm, max, acc
-int vstep[4] = {110, 900, 470, 0};
-
+int vstep1[4] = {110, 900, 470, 0};
+int vstep2[4];
+int vstep3[4];
 
 void setup() {
     Serial.begin(115200);
@@ -44,8 +45,9 @@ void loop() {
     if (48 <= ch && ch <= 57) {
       stepset();
     } else {
-      digitalWrite(ENA, LOW);
-      digitalWrite(ENAa, LOW);
+      digitalWrite(ENA1, LOW);
+      digitalWrite(ENA2, LOW);
+      digitalWrite(ENA2, LOW);
       charconverter();
       stepmov();
     }
