@@ -81,6 +81,9 @@ python will getting every potentiometer value and alwways makes frame to idle st
 
 2. another due board will getting all information about values from sensors( 8analog pins for 4 gy-91 modules)
 
+3. us sensors will be installing ribon
+
+4. need two camera module and transmitter(must checking atmosphere)
 
 
 # ordering
