@@ -7,8 +7,8 @@
 #define DIR1    6
 #define STEP1   7
 #define ENA2    8
-#define DIR2    9//for direction
-#define STEP2   10//for step signal
+#define DIR2    9
+#define STEP2   10
 #define ENA3    11
 #define DIR3    12
 #define STEP3   13
@@ -53,7 +53,7 @@ void loop() {
     } else {
       digitalWrite(ENA1, LOW);
       digitalWrite(ENA2, LOW);
-      digitalWrite(ENA2, LOW);
+      digitalWrite(ENA3, LOW);
       charconverter();
       stepmov();
     }
