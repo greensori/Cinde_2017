@@ -1,7 +1,7 @@
 //controlling 3 stepping motor controller
 //must setting new (int totalswitch)
 //char totalswitch = a ~ c (1 stepping) d, e, f(1-2), (2-3), (1-3) g(1-2-3)
-//setting DIR, acc -> setting pulse -> end
+//stepset() -> setting pulse -> end
 
 #define ENA1    5
 #define DIR1    6
