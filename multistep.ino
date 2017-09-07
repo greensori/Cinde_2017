@@ -12,9 +12,9 @@
 
 char ch;
 int count;
-int i;
 //steps, rpm, max, acc
-int vstep1[4] = {110, 900, 470, 0};
+int setstep[2];
+int vstep1[4] = {110, 900, 470, 0, 0};
 int vstep2[4];
 int vstep3[4];
 
@@ -109,17 +109,21 @@ void  stepmov() {
   if (vstep[0] <= 1) {
     vstep[0] = 2;
   }
-  for (i = 0; i < vstep[0]; i++) {
+  for (count = 0; count < vstep[0]; count++) {
     digitalWrite(STEP, HIGH);
     delayMicroseconds(vstep[1]);
     digitalWrite(STEP, LOW);
-    if (vstep[1] >= vstep[2]) {
-      vstep[1] = vstep[1] - vstep[3];
-    } else {
-      vstep[1] = limitrpm;
-    }
+    pulseset()
   }
   Serial.println(vstep[1]);
   digitalWrite(ENA, HIGH);
   digitalWrite(ENAa, HIGH);
+}
+
+void pulseset() {
+    if (vstep[1] >= vstep[2]) {
+        vstep[1] = vstep[1] - vstep[3];
+    } else {
+        vstep[1] = vstep[2];
+    }
 }
