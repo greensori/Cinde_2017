@@ -1,8 +1,6 @@
-
-
-#define ENA     13
-#define STEP    9//for step signal
-#define DIR     8//for direction
+#define ENA     11
+#define DIR     12//for direction
+#define STEP    13//for step signal
 
 char ch;
 int count;
@@ -20,7 +18,6 @@ void setup() {
     pinMode(DIR, OUTPUT);
     //stepper off
     digitalWrite(ENA, HIGH);
-    digitalWrite(DIR, HIGH);
     }
 
 
@@ -30,16 +27,13 @@ void loop() {
     if (48 <= ch && ch <= 57) {
       stepset();
     } else {
-      digitalWrite(ENA, LOW);
+      digitalWrite(ENA, LOW);  
       charconverter();
       stepmov();
     }
   // else { analog.read(potentiometer)) <- calculating status
 }}
 
-void stepsetting() {
-    if vstep   
-}
 
 void charconverter() {
   if (ch == 'q') {
@@ -100,12 +94,12 @@ void  stepmov() {
     digitalWrite(STEP, HIGH);
     delayMicroseconds(vstep[1]);
     digitalWrite(STEP, LOW);
-    delayMicroseconds(vstep[1]);
     if (vstep[1] >= vstep[2]) {
       vstep[1] = vstep[1] - vstep[3];
     } else {
       vstep[1] = limitrpm;
     }
   }
+  Serial.println (vstep[1]);
   digitalWrite(ENA, HIGH);
 }
