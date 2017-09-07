@@ -1,3 +1,8 @@
+//controlling 3 stepping motor controller
+//must setting new (int totalswitch)
+//char totalswitch = a ~ c (1 stepping) d, e, f(1-2), (2-3), (1-3) g(1-2-3)
+//stepps setting 
+
 #define ENA1    5
 #define DIR1    6
 #define STEP1   7
@@ -13,7 +18,8 @@
 char ch;
 int count;
 //steps, rpm, max, acc
-int setstep[2];
+int totalswitch;
+//setting 3stepping motors (steps, pulse, maxpulse, acc, onoff)
 int vstep1[4] = {110, 900, 470, 0, 0};
 int vstep2[4];
 int vstep3[4];
@@ -54,6 +60,7 @@ void loop() {
   // else { analog.read(potentiometer)) <- calculating status
 }}
 
+//to give a total switch values
 void charconverter() {
   if (ch == 'q') {
     vstep[0] = 110;
@@ -109,15 +116,16 @@ void  stepmov() {
   if (vstep[0] <= 1) {
     vstep[0] = 2;
   }
-  for (count = 0; count < vstep[0]; count++) {
+   for (count = 0; count < vstep[0]; count++) {
     digitalWrite(STEP, HIGH);
     delayMicroseconds(vstep[1]);
     digitalWrite(STEP, LOW);
     pulseset()
   }
   Serial.println(vstep[1]);
-  digitalWrite(ENA, HIGH);
-  digitalWrite(ENAa, HIGH);
+  digitalWrite(ENA1, HIGH);
+  digitalWrite(ENA2, HIGH);
+  digitalWrite(ENA3, HIGH);
 }
 
 void pulseset() {
