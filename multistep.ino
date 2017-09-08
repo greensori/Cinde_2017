@@ -14,6 +14,7 @@
 #define ENA3    11
 #define STEP3   13
 
+#define pulselimit 3000
 #define limitrpm 870
 const int dir[3] = {6, 9, 12};
 
@@ -55,7 +56,9 @@ void loop() {
     }
 }
 
-
+// # $ % = initiate setting stepping
+// 0~7 accelation setting
+// 89 setting dirextion
 void charconverter() {
     if (35 <= ch && ch <= 37) {
       switch (ch) {
@@ -111,7 +114,7 @@ void charconverter() {
         vpulse[stepno] = 800;
         break;
       case 98:
-        vpulse[spepno] = 700;
+        vpulse[stepno] = 1000;
         break;
       default:
         break;
@@ -141,4 +144,5 @@ void pulseset() {
         vpulse[stepno] = vpulse[stepno] - vacc[stepno];
     } else {
         vpulse[stepno] = vlimit[stepno];
-}
+    } // if end
+} //proc end
