@@ -22,7 +22,7 @@ char ch;
 int count;
 int i;
 int stepno;
-int goswitch;
+int goswitch = 0;
 //setting 3stepping motors (steps, pulse, maxpulse, acc)
 int vpulse[3] = {1000, 1000, 1000};
 int vstep[3];
@@ -47,13 +47,15 @@ void setup() {
 }
 
 void loop() {
+  vstep[0] = 200;
   if (Serial.available() > 0) {
     ch = Serial.read();
     charconverter();
+    Serial.println (goswitch);
     if (goswitch > 0) {
-      stepmove(); 
-    } 
+    stepmove(); 
     }
+  }
 }
 
 // # $ % = initiate setting stepping
@@ -76,6 +78,7 @@ void charconverter() {
           break;
       }
     } else if (48<= ch && ch <= 57) {
+      Serial.print ("setiing accelaration");
       switch (ch) {
         case 48:
           vacc[stepno] = 0;
@@ -109,6 +112,7 @@ void charconverter() {
           break;
       } //end switch
     } else if (97<= ch && ch <= 122) {
+      Serial.println ("setting pulse");
     switch (ch) {
       case 97:
         vpulse[stepno] = 800;
@@ -116,28 +120,36 @@ void charconverter() {
       case 98:
         vpulse[stepno] = 1000;
         break;
-      default:
+      case 99:
+        vpulse[stepno] = 2000;
         break;
-            
+      default:
+        break;            
      } //end switch
+    } else if (65 <= ch && ch <= 90) {
+      Serial.println ("which wtepping will be on");
+      switch (ch) {
+        case 65:
+          goswitch = 1;
+          break;
+        case 66:
+          goswitch = 2;
+          break;
+        case 67:
+          goswitch = 3;
+          break;
+        case 68:
+          goswitch = 4;
+          break;
+        case 69:
+          goswitch = 5;
+          break;
+        default:
+          break;
+      } // switch end
   } //end if
 } // end proc
 
-
-//!33[91]93
-void stepmove() {
-  if (goswitch == 1) {
-    digitalWrite(ENA1, LOW);
-      for (count = 0; count < vstep[0]; count++) {
-        digitalWrite(STEP1, HIGH);
-        delayMicroseconds(vpulse[0]);
-        digitalWrite(STEP1, LOW);
-        pulseset();
-        }
-    Serial.println(vpulse[stepno]);
-    digitalWrite(ENA1, HIGH);
-  }
-} // end proc
 
 void pulseset() {
     if (vpulse[stepno] >= vlimit[stepno]) {
@@ -146,3 +158,56 @@ void pulseset() {
         vpulse[stepno] = vlimit[stepno];
     } // if end
 } //proc end
+
+//!33[91]93
+void stepmove() {
+  if (goswitch == 1) {
+    Serial.println ("switch 1on");
+    digitalWrite(ENA1, LOW);
+      for (count = 0; count < vstep[0]; count++) {
+        digitalWrite(STEP1, HIGH);
+        delayMicroseconds(vpulse[0]);
+        digitalWrite(STEP1, LOW);
+        pulseset();
+        }
+        Serial.println(vpulse[stepno]);
+        digitalWrite(ENA1, HIGH);
+      } else if (goswitch == 2) {
+      digitalWrite(ENA2, LOW);
+      for (count = 0; count < vstep[0]; count++) {
+        digitalWrite(STEP2, HIGH);
+        delayMicroseconds(vpulse[1]);
+        digitalWrite(STEP2, LOW);
+        pulseset();
+        }
+        Serial.println(vpulse[stepno]);
+        digitalWrite(ENA2, HIGH);
+     } else if (goswitch == 3) {
+        digitalWrite(ENA3, LOW);
+        for (count = 0; count < vstep[0]; count++) {
+          digitalWrite(STEP3, HIGH);
+          delayMicroseconds(vpulse[2]);
+          digitalWrite(STEP3, LOW);
+          pulseset();
+          }
+          Serial.println(vpulse[stepno]);
+          digitalWrite(ENA3, HIGH);
+      } else if (goswitch == 4) {
+        Serial.println ("double");
+        digitalWrite(ENA2, LOW);
+        digitalWrite(ENA3, LOW);
+        for (count = 0; count < vstep[0]; count++) {
+          digitalWrite(STEP2, HIGH);
+          digitalWrite(STEP3, HIGH);
+          delayMicroseconds(vpulse[2]);
+          digitalWrite(STEP3, LOW);          
+          digitalWrite(STEP3, LOW);
+          pulseset();
+          }
+          Serial.println(vpulse[stepno]);
+          digitalWrite(ENA2, HIGH);          
+          digitalWrite(ENA3, HIGH);          
+      }//end if
+      goswitch = 0;
+} // end proc
+
