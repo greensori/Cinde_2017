@@ -5,8 +5,6 @@
 //before stepping operateion ending, must send serial signals
 //step = pulse * 2
 
-
-
 #define ENA1    5
 #define STEP1   7
 #define ENA2    8
