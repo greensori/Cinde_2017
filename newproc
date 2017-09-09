@@ -27,22 +27,29 @@ void dvastepping() {
   }
 }
 
-int dvacalculator() {
-  if (woreker = 'notin') {
-    if (pulse[0] >= pulse[1]) {
-      if (pulsegap[0] >= pulse[1]) {
-        int result = pulsegap[1]'
-        pulsegap[0] = pulse[0] - pulse[1];
-      } else if (pulsegap[0] < pulse[1]) {
-        pulsegap[0] = pulse[0]
-        // if (pusegap[1] != 0, then working;
-        pulsegap[1] = pulse[1] - pulsega[[0]
-        result pulsegap[0]
+
+void dvacalculator(int a, int b) {
+      if (pulsegap[b] > 0) {
+        delayMicroseconds(pulsegab[b]);
+        pulsegap[b] = 0;
+      } else if (pulsegap[a] > pulse[b]) {
+        pulsegap[a] = (pulsegap[a] - pulse[b]);
+        pulsegap[a] -= pulse[b]
+        steptimer -= pulse[b];
+        delayMicroseconds(pulse[b]);
+        digitalWrite(STEP[b], LOW);
+        digitalWrite(STEP[b], HIGH);
+      } else if (pulsegap[a] < pulse[b]) {
+        pulsegap[b] = pulse[b] - pulsegap[a]
+        delayMicroseconds (pulsegap[b]);
+        digitalWrite(STEP[a], LOW);
+        digitalWrite(STEP[a], HIGH);
+      } else if (pulsegap[a] == pulse[b]) {
+        delayMicroseconds(pulsegap[b]);
+        digitalWrite(STEP[a], LOW);
+        digitalWrite(STEP[b], LOW);
+        digitalWrite(STEP[a], HIGH);
+        digitalWrite(STEP[b], HIGH);  
+        pulsegap[a] = pulse[a] - pulse[b];
       }
-    //// case1 end
-    } else if (pulse[0] < pulse[1] {
-      
-    }
-  }
-  return result;
 }
