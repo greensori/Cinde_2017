@@ -1,0 +1,25 @@
+//testing scripts
+
+void newmove() {
+  //mov 3stepping case
+  if (worker == 'notin') {
+  //stepping moving if remain int remainpulse
+  //after stepping moving, totalpulse - pullse
+  //while (rp < 0)
+  digitalWrite(ENA[worker],LOW);
+  digitalWrite(STEP[2], HIGH);
+  digitalWrite(STEP[3], HIGH);
+  gappulse[1] = (vpulse
+  while (stpulse > 0) {
+    //stepper1.work
+    //stepper2.work
+    //delay (time pulse2)
+    //stepper2.work
+    //delay (time pulse1 - pulse2) = a
+    //stepper1.work
+    //delay (time pulse2 - a) = a
+    //stepper2.work 
+    //delat (time pulse1 - a)
+    // stepper1. work   
+  }
+}
