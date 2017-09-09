@@ -5,22 +5,20 @@
 //before stepping operateion ending, must send serial signals
 //step = pulse * 2
 
-#define ENA1    5
-#define STEP1   7
-#define ENA2    8
-#define STEP2   10
-#define ENA3    11
-#define STEP3   13
 
 #define pulselimit 3000
 #define limitrpm 870
-const int dir[3] = {6, 9, 12};
+
+const int ENA[3] = {5, 8, 11};
+const int DIR[3] = {6, 9, 12};
+const int STEP[3] = {7, 10, 11};
 
 char ch;
 int count;
 int i;
 int stepno;
-int goswitch = 0;
+int worker;
+int gtime;
 //setting 3stepping motors (steps, pulse, maxpulse, acc)
 int vpulse[3] = {1000, 1000, 1000};
 int vstep[3];
@@ -29,19 +27,12 @@ int vlimit[3] = {870, 870, 870};
 
 void setup() {
     Serial.begin(115200);
-    pinMode(ENA1, OUTPUT);
-    pinMode(ENA2, OUTPUT);
-    pinMode(ENA3, OUTPUT);
-    pinMode(STEP1, OUTPUT);
-    pinMode(STEP2, OUTPUT);
-    pinMode(STEP3, OUTPUT);
     for (i= 0; i < 3; i++) {
-       pinMode(dir[i], OUTPUT);
+       pinMode(ENA[i], OUTPUT);
+       digitalWrite(ENA[i], HIGH);
+       pinMode(DIR[i], OUTPUT);     
+       pinMode(STEP[i], OUTPUT);
     }
-    //stepper off
-    digitalWrite(ENA1, HIGH);
-    digitalWrite(ENA2, HIGH);
-    digitalWrite(ENA3, HIGH);
 }
 
 void loop() {
@@ -128,19 +119,19 @@ void charconverter() {
       Serial.println ("which wtepping will be on");
       switch (ch) {
         case 65:
-          goswitch = 1;
+          worker = 0;
           break;
         case 66:
-          goswitch = 2;
+          worker = 1;
           break;
         case 67:
-          goswitch = 3;
+          worker = 2;
           break;
         case 68:
-          goswitch = 4;
+          worker = 3;
           break;
         case 69:
-          goswitch = 5;
+          worker = 4;
           break;
         default:
           break;
@@ -159,38 +150,38 @@ void pulseset() {
 
 //!33[91]93
 void stepmove() {
-  if (goswitch == 1) {
+  if (worker == 0) {
     Serial.println ("switch 1on");
-    digitalWrite(ENA1, LOW);
+    digitalWrite(ENA[worker], LOW);
       for (count = 0; count < vstep[0]; count++) {
-        digitalWrite(STEP1, HIGH);
+        digitalWrite(STEP[worker], HIGH);
         delayMicroseconds(vpulse[0]);
-        digitalWrite(STEP1, LOW);
+        digitalWrite(STEP[worker], LOW);
         pulseset();
         }
         Serial.println(vpulse[stepno]);
-        digitalWrite(ENA1, HIGH);
-      } else if (goswitch == 2) {
-      digitalWrite(ENA2, LOW);
+        digitalWrite([worker], HIGH);
+      } else if (worker == 1) {
+      digitalWrite(ENA[worker], LOW);
       for (count = 0; count < vstep[0]; count++) {
-        digitalWrite(STEP2, HIGH);
-        delayMicroseconds(vpulse[1]);
-        digitalWrite(STEP2, LOW);
+        digitalWrite(STEP[worker], HIGH);
+        delayMicroseconds(vpulse[worker]);
+        digitalWrite(STEP[worker], LOW);
         pulseset();
         }
         Serial.println(vpulse[stepno]);
-        digitalWrite(ENA2, HIGH);
-     } else if (goswitch == 3) {
-        digitalWrite(ENA3, LOW);
+        digitalWrite(ENA[worker], HIGH);
+     } else if (worker == 2) {
+        digitalWrite(ENA[worker], LOW);
         for (count = 0; count < vstep[0]; count++) {
-          digitalWrite(STEP3, HIGH);
-          delayMicroseconds(vpulse[2]);
-          digitalWrite(STEP3, LOW);
+          digitalWrite(STEP[worker], HIGH);
+          delayMicroseconds(vpulse[worker]);
+          digitalWrite(STEP[worker], LOW);
           pulseset();
           }
           Serial.println(vpulse[stepno]);
           digitalWrite(ENA3, HIGH);
-      } else if (goswitch == 4) {
+      } else if (worker == 3) {
         Serial.println ("double");
         digitalWrite(ENA2, LOW);
         digitalWrite(ENA3, LOW);
@@ -198,13 +189,13 @@ void stepmove() {
           digitalWrite(STEP2, HIGH);
           digitalWrite(STEP3, HIGH);
           delayMicroseconds(vpulse[2]);
-          digitalWrite(STEP3, LOW);          
-          digitalWrite(STEP3, LOW);
+          digitalWrite(STEP[3], LOW);          
+          digitalWrite(STEP[3], LOW);
           pulseset();
           }
           Serial.println(vpulse[stepno]);
-          digitalWrite(ENA2, HIGH);          
-          digitalWrite(ENA3, HIGH);          
+          digitalWrite(ENA[2], HIGH);          
+          digitalWrite(ENA[3], HIGH);          
       }//end if
       goswitch = 0;
 } // end proc
