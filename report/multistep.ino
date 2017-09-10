@@ -26,6 +26,8 @@ int worker;
 //if (rx < 0) then there is no working
 int rx = 2000;
 int pulsegap[3];
+//saving remain pulse
+int steploop[2];
 //setting 3stepping motors (steps, pulse, maxpulse, acc)
 int vpulse[3] = {1000, 1000, 1000};
 int vstep[3];
