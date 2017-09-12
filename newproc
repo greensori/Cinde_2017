@@ -1,55 +1,43 @@
-void dvastepping() {
-  //mov 3stepping case
-  if (worker == 'notin') {
-  //stepping moving if remain int remainpulse
-  //after stepping moving, totalpulse - pullse
-  //while (rp < 0)
-  
-  for (i = 0; i < 3; i++) {
-  digitalWrite(ENA[i],LOW);
-  digitalWrite(ENA[i], HIGH);  
-  }
+#getting maximum / minimum pulse
 
- // [7 - '3'] [4 - '3'] ['1' - 3] [6 - '2'] [4 - '3']
-  // mov 2stepping case
-  while (notin) {
-    digitalWrite(STEP[0], HIGH):
-    digitalWrite(STEP[1], HIGH):
-    delayMicroseconds(pulse[1]);
-    digitalWrite(STEP[1], LOW);
-    digitalWrite(STEP[1], HIGH);    
-    delayMicroseconds(pulsegap[0]); 
-    digitalWrite(STEP[0], LOW);
-    digitalWrite(STEP[0], HIGH);
-    delayMicroseconds(pulse[1] - pulsegap[1]);
-    digitalWrite(STEP[1], LOW);
-    digitalWrite(STEP[1], HIGH);  
+#define sumStep 3
+
+int maxPulse[2];
+int minPulse[2];
+int equalPulse[3] = {0, 0, 0, 0, 0};
+
+#when proc charconverter, must setting both stepPulse and remainPulse/
+
+
+void initial() {
+
+minPulse[0] = stepPulse[0];
+maxPulse[0] = stepPulse[0];
+
+ for (i = 0; i < sumStep; i++) {
+  if (maxpulse[0] < stepPulse[i]) {
+    maxPulse[2] = {stepPulse[i], i};
+  } else if (minPulse[0] > stepPulse[i]) {
+    minPulse[2] = {stepPulse[i], i};
+  }else if (minPulse[0] = stepPulse[i]) {
+    equalPulse[0] = stepPulse[i];
+    equalPulse[1] += 1;
+    wqualPulse[2] = i;
   }
 }
 
+void setPulse(int a, int b) { 
+# delay minimum step and pulse
+# e.g int a = minPulse[0], int b = minPulse[1]
 
-void dvacalculator(int a, int b) {
-      if (pulsegap[b] > 0) {
-        delayMicroseconds(pulsegab[b]);
-        pulsegap[b] = 0;
-      } else if (pulsegap[a] > pulse[b]) {
-        pulsegap[a] = (pulsegap[a] - pulse[b]);
-        pulsegap[a] -= pulse[b]
-        steptimer -= pulse[b];
-        delayMicroseconds(pulse[b]);
-        digitalWrite(STEP[b], LOW);
-        digitalWrite(STEP[b], HIGH);
-      } else if (pulsegap[a] < pulse[b]) {
-        pulsegap[b] = pulse[b] - pulsegap[a]
-        delayMicroseconds (pulsegap[b]);
-        digitalWrite(STEP[a], LOW);
-        digitalWrite(STEP[a], HIGH);
-      } else if (pulsegap[a] == pulse[b]) {
-        delayMicroseconds(pulsegap[b]);
-        digitalWrite(STEP[a], LOW);
-        digitalWrite(STEP[b], LOW);
-        digitalWrite(STEP[a], HIGH);
-        digitalWrite(STEP[b], HIGH);  
-        pulsegap[a] = pulse[a] - pulse[b];
+    digitalWrite(STEP[b], HIGH);
+    delayMicroseconds(remainPulse[a]);
+
+  for (i = 0; i < sumStep; i++) {
+    remainPulse[i] -= stepPulse[i];
+    if (remainPulse[i] < stepPulse[i]) {
+      remainPulse[i] = stepPulse[i];
       }
+    }
 }
+
