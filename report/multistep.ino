@@ -294,11 +294,3 @@ void dvacal(int a, int b) {
 }
 
 
-void tristep() {
-  
-  
-} // proc end
-
-void trical() {
-  
-}
