@@ -8,10 +8,11 @@
 
 #define pulselimit 2000
 #define limitrpm 870
+#define sumStep 3
 
-const int ENA[3] = {5, 8, 11};
-const int DIR[3] = {6, 9, 12};
-const int STEP[3] = {7, 10, 11};
+const int ENA[sumStep] = {5, 8, 11};
+const int DIR[sumStep] = {6, 9, 12};
+const int STEP[sumStep] = {7, 10, 11};
 
 // reading from python
 char ch;
@@ -25,15 +26,16 @@ int worker;
 //rx storage remain pulse  timer
 //if (rx < 0) then there is no working
 int rx = 2000;
-int pulsegap[3];
 //saving remain pulse
 int steploop[2];
 //setting 3stepping motors (steps, pulse, maxpulse, acc)
-int vpulse[3] = {1000, 1000, 1000};
-int vstep[3];
-int vacc[3] = {0, 0, 0};
-int vlimit[3] = {870, 870, 870};
+int stepPulse[sumStep] = {1000, 1000, 1000};
+int stepCount[sumStep];
+int stepAccel[sumStep] = {0, 0, 0};
+int accelLimit[sumStep] = {870, 870, 870};
+int remainPulse[sumStep];
 //using in dvacalculator
+
 int result;
 int dvapulse;
 //saves remain stepping pulse [stepno, pulse]
@@ -51,8 +53,12 @@ void setup() {
     }
 }
 
+//charconverter. reang serial information from pc
+//stepmov ->  dvastep() -> stepcal()
+//if there is remain steps then working remain proc
+
 void loop() {
-  vstep[0] = 200;
+  stepCount[0] = 200;
   if (Serial.available() > 0) {
     ch = Serial.read();
     charconverter();
@@ -86,28 +92,28 @@ void charconverter() {
       Serial.print ("setiing accelaration");
       switch (ch) {
         case 48:
-          vacc[stepno] = 0;
+          stepAccel[stepno] = 0;
           break;
         case 49:
-          vacc[stepno] = 1;
+          stepAccel[stepno] = 1;
           break;
         case 50:
-          vacc[stepno] = 2;
+          stepAccel[stepno] = 2;
           break;
         case 51:
-          vacc[stepno] = 3;
+          stepAccel[stepno] = 3;
           break;
         case 52:
-          vacc[stepno] = -1;
+          stepAccel[stepno] = -1;
           break;
         case 53:
-          vacc[stepno] = -2;
+          stepAccel[stepno] = -2;
           break;
         case 54:
-          vacc[stepno] = -3;
+          stepAccel[stepno] = -3;
           break;
         case 55:
-          vacc[stepno] = (vacc[stepno] * 2);
+          stepAccel[stepno] = (stepAccel[stepno] * 2);
           break;
         case 56:
           digitalWrite(DIR[stepno], HIGH);
@@ -120,13 +126,13 @@ void charconverter() {
       Serial.println ("setting pulse");
     switch (ch) {
       case 97:
-        vpulse[stepno] = 800;
+        stepPulse[stepno] = 800;
         break;
       case 98:
-        vpulse[stepno] = 1000;
+        stepPulse[stepno] = 1000;
         break;
       case 99:
-        vpulse[stepno] = 2000;
+        stepPulse[stepno] = 2000;
         break;
       default:
         break;            
@@ -155,61 +161,65 @@ void charconverter() {
   } //end if
 } // end proc
 
+void remainstep() {
+  
+}
 
 void pulseset() {
-    if (vpulse[stepno] >= vlimit[stepno]) {
-        vpulse[stepno] = vpulse[stepno] - vacc[stepno];
+    if (stepPulse[stepno] >= accelLimit[stepno]) {
+        stepPulse[stepno] = stepPulse[stepno] - stepAccel[stepno];
     } else {
-        vpulse[stepno] = vlimit[stepno];
+        stepPulse[stepno] = accelLimit[stepno];
     } // if end
 } //proc end
 
-//!33[91]93
+
+
 void stepmove() {
   if (worker == 0) {
     Serial.println ("switch 1on");
     digitalWrite(ENA[worker], LOW);
-      for (count = 0; count < vstep[0]; count++) {
+      for (count = 0; count < stepCount[0]; count++) {
         digitalWrite(STEP[worker], HIGH);
-        delayMicroseconds(vpulse[0]);
+        delayMicroseconds(stepPulse[0]);
         digitalWrite(STEP[worker], LOW);
         pulseset();
         }
-        Serial.println(vpulse[stepno]);
+        Serial.println(stepPulse[stepno]);
         digitalWrite(STEP[worker], HIGH);
       } else if (worker == 1) {
       digitalWrite(ENA[worker], LOW);
-      for (count = 0; count < vstep[0]; count++) {
+      for (count = 0; count < stepCount[0]; count++) {
         digitalWrite(STEP[worker], HIGH);
-        delayMicroseconds(vpulse[worker]);
+        delayMicroseconds(stepPulse[worker]);
         digitalWrite(STEP[worker], LOW);
         pulseset();
         }
-        Serial.println(vpulse[stepno]);
+        Serial.println(stepPulse[stepno]);
         digitalWrite(ENA[worker], HIGH);
      } else if (worker == 2) {
         digitalWrite(ENA[worker], LOW);
-        for (count = 0; count < vstep[0]; count++) {
+        for (count = 0; count < stepCount[0]; count++) {
           digitalWrite(STEP[worker], HIGH);
-          delayMicroseconds(vpulse[worker]);
+          delayMicroseconds(stepPulse[worker]);
           digitalWrite(STEP[worker], LOW);
           pulseset();
           }
-          Serial.println(vpulse[stepno]);
+          Serial.println(stepPulse[stepno]);
           digitalWrite(ENA[2], HIGH);
       } else if (worker == 3) {
         Serial.println ("double");
         digitalWrite(ENA[1], LOW);
         digitalWrite(ENA[2], LOW);
-        for (count = 0; count < vstep[0]; count++) {
+        for (count = 0; count < stepCount[0]; count++) {
           digitalWrite(STEP[1], HIGH);
           digitalWrite(STEP[2], HIGH);
-          delayMicroseconds(vpulse[2]);
+          delayMicroseconds(stepPulse[2]);
           digitalWrite(STEP[1], LOW);          
           digitalWrite(STEP[2], LOW);
           pulseset();
           }
-          Serial.println(vpulse[stepno]);
+          Serial.println(stepPulse[stepno]);
           digitalWrite(ENA[2], HIGH);          
           digitalWrite(ENA[3], HIGH);          
       }//end if
@@ -222,30 +232,30 @@ void dvastep() {
   if (worker == 3) {
     digitalWrite(ENA[0], LOW);
     digitalWrite(ENA[1], LOW);
-    digitalWrite(STEP[0], HIGH):
-    digitalWrite(STEP[1], HIGH):
+    digitalWrite(STEP[0], HIGH);
+    digitalWrite(STEP[1], HIGH);
     while (rx > 0) {
-      if (pulse[0] >= pulse[1]) {
+      if (stepPulse[0] >= stepPulse[1]) {
       dvacal(0, 1);
-    } else if (pulse[0] < pulse[1]) {
+    } else if (stepPulse[0] < stepPulse[1]) {
       dvacal(1, 0);
     }} // while, if end
   } else if (worker == 4) {
     digitalWrite(ENA[0], LOW);
     digitalWrite(ENA[2], LOW);
-    digitalWrite(STEP[0], HIGH):
-    digitalWrite(STEP[2], HIGH):      
+    digitalWrite(STEP[0], HIGH);
+    digitalWrite(STEP[2], HIGH);      
     while (rx > 0) {
-      if (pulse[0] >= pulse[2]) {
+      if (stepPulse[0] >= stepPulse[2]) {
       dvacal(0, 2);
-    } else if (pulse[0] < pulse[2]) {
+    } else if (stepPulse[0] < stepPulse[2]) {
       dvacal(2, 0);
     }}
   } else if (worker == 5) {
     while (rx > 0) {
-      if (pulse[0] >= pulse[2]) {
+      if (stepPulse[0] >= stepPulse[2]) {
       dvacal(0, 2);
-    } else if (pulse[0] < pulse[2]) {
+    } else if (stepPulse[0] < stepPulse[2]) {
       dvacal(2, 0);
     }}    
   }
@@ -255,27 +265,27 @@ void dvastep() {
 
 //before this proc there will be existing if (pulse[a] >= pulse[b]
 void dvacal(int a, int b) {
-      if (pulsegap[b] > 0) {
-        delayMicroseconds(pulsegab[b]);
-        pulsegap[b] = 0;
-      } else if (pulsegap[a] > pulse[b]) {
-        pulsegap[a] = (pulsegap[a] - pulse[b]);
-        pulsegap[a] -= pulse[b]
-        steptimer -= pulse[b];
-        rx -= pulse[b]
-        delayMicroseconds(pulse[b]);
+      if (remainPulse[b] > 0) {
+        delayMicroseconds(remainPulse[b]);
+        remainPulse[b] = 0;
+      } else if (remainPulse[a] > stepPulse[b]) {
+        remainPulse[a] = (remainPulse[a] - stepPulse[b]);
+        remainPulse[a] -= stepPulse[b];
+        steptimer -= stepPulse[b];
+        rx -= stepPulse[b];
+        delayMicroseconds(stepPulse[b]);
         digitalWrite(STEP[b], LOW);
         digitalWrite(STEP[b], HIGH);
-      } else if (pulsegap[a] < pulse[b]) {
-        pulsegap[b] = pulse[b] - pulsegap[a]
-        rx -= pulsegap[b]
-        delayMicroseconds (pulsegap[b]);
+      } else if (remainPulse[a] < stepPulse[b]) {
+        remainPulse[b] = stepPulse[b] - remainPulse[a];
+        rx -= remainPulse[b];
+        delayMicroseconds (remainPulse[b]);
         digitalWrite(STEP[a], LOW);
         digitalWrite(STEP[a], HIGH);
-      } else if (pulsegap[a] == pulse[b]) {
-        rx -= pulse[b]
-        pulsegap[a] = pulse[a] - pulse[b];
-        delayMicroseconds(pulsegap[b]);
+      } else if (remainPulse[a] == stepPulse[b]) {
+        rx -= stepPulse[b];
+        remainPulse[a] = stepPulse[a] - stepPulse[b];
+        delayMicroseconds(remainPulse[b]);
         digitalWrite(STEP[a], LOW);
         digitalWrite(STEP[b], LOW);
         digitalWrite(STEP[a], HIGH);
@@ -283,9 +293,11 @@ void dvacal(int a, int b) {
       }
 }
 
+
 void tristep() {
   
-}
+  
+} // proc end
 
 void trical() {
   
