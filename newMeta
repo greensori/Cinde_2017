@@ -177,6 +177,8 @@ void charconverter() {
           break;
       } // switch end
   } //end if
+
+
 } // end proc
 
 //to getting a active state stepping
@@ -248,4 +250,32 @@ void nuMeta() {
       } // for end    
     }// if end
   } // proc end
+}
+
+
+//
+    digitalWrite(ENA[minPulse[1]], HIGH):
+    delaymicroseconds(minPulse[0]);
+    digitalWrite(ENA[minPuklse[1], LOW);
+
+for (i = 0; i < sumStep; i++) {
+    remainPulse[i] -= minPulse[0]
+    if (remainPulse[i] <= 0) {
+      remainPulse[i] = stepPulse[i];
+      }
+}
+
+// if (equalPulse[0] == sumStep) {
+    for (i = 0; i < sumStep; i++) {
+        digitalWrite((ENA[i], HIGH);
+    }
+    delayMicroseconds(minPulse[0]);
+    for (i = 0; i < sumStep; i++) {
+        digitalWrite((ENA[i], LOW);
+    } else if (equalPuse > 1 && equalPulse[0] < sumStep) {
+    for (i = 1; i < sumStep; i++) {
+        if (equalPulse[i] > 0 ){
+            digitalWrite(ENA[i], HIGH);
+          }
+    }
 }
