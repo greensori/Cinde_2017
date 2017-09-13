@@ -24,6 +24,8 @@ int stepAccel[sumStep] = {0, 0, 0};
 int accelLimit[sumStep] = {570, 570, 570};
 //if this value wil be > 0 then working before charconverter
 int remainPulse[sumStep];
+//this two values have total/seperate stepping structure
+int equalPulse[sumStep];
 int worker[sumStep];
 // reading from python
 char ch;
@@ -34,9 +36,9 @@ int i;
 int stepno;
 //how many stepping works, set in the charconverter
 //worker will be setting 0 in stepmov
-//rx storage remain pulse  timer
-//if (rx < 0) then there is no working
-int rx;
+//terminalStep storage remain pulse  timer
+//if (terminalStep < 0) then there is no working
+int terminalStep;
 //saving remain pulse
 int steploop[2];
 //setting 3stepping motors (steps, pulse, maxpulse, acc)
@@ -69,17 +71,24 @@ void setup() {
 //if there is remain steps then working remain proc
 
 void loop() {
-  stepCount[0] = 200;
   if (Serial.available() > 0) {
     ch = Serial.read();
-    rx = pulseTimer;
+    newStart();
+    terminalStep = pulseTimer;
     charconverter();
     if (worker >= 0) {
       steptimer = pulseTimer;
-      stepmove(); 
     }
   }
 }
+
+void newStart() {
+  for (i = 0; i < sumStep; i++) {
+    equalPulse[i] = 0;
+    worker[i] = 0;
+  }
+}
+
 
 // # $ % = initiate setting stepping
 // 0~7 accelation setting
@@ -170,12 +179,15 @@ void charconverter() {
   } //end if
 } // end proc
 
+//to getting a active state stepping
+//end of stepmov worker will be initiating
 void activestep(int a) {
   worker[0] += 1;
-  if (worker[0] != sumStep) {
-    for (i = 1; i <sumStep; i++) {
-      if (worker[i] == 0) {
+  if (worker[0] < sumStep) {
+    for (i = 1; i < sumStep; i++) {
+      if (worker[i] < 0) {
         worker[i] = a;
+        i = sumStep;
       }
     }
   } //end if
@@ -189,25 +201,51 @@ void accelset() {
     } // if end
 } //proc end
 
-void stepmove() {
-  
+void nuMetamov() {
+  while (terminalStep > 0 ) {
+    
+  }
+}
+
+
+void temp1() {
+  for (i = 1; i < sumStep; i++) {
+    if (worker[i] != 0) {
+      count = worker[i];
+      digitalWrite(STEP[count], HIGH);
+    }
+  }
+  delayMicroseconds (minPulse[1]);
 }
 
 void nuMeta() {
+  //when 3 stepper working
   if (worker[0] == sumStep) {
-    //doing operation 
-  } else if (worker[0] != 0) {
+    for (i = 0; i < sumStep; i++) {
+      digitalWrite(ENA[i], LOW);
+    }
+  } else if (worker[0] > 0) {
     //savings the amount of active stepper
     for (i = 1; i < sumStep; i++) {
-      if (minPulse[0] > stepPulse[i]) {
-        minPulse[0] = stepPulse[i];
-        minPulse[1] = i;
-        } else if (minPulse[0] = stepPulse[i]) {
-          equalPulse[0] = stepPulse[i];
-          equalPulse[1] += 1;
-          equalPulse[2] = i;
+      count = worker[i];
+      if (minPulse[0] > stepPulse[count]) {
+        minPulse[0] = stepPulse[count];
+        minPulse[1] = count;
+        equalPulse[0] = count;
+        for (i = 1; i < sumStep; i++) {
+          equalPulse[i] = 0;
+        }
+        } else if (minPulse[0] = stepPulse[count]) {
+          equalPulse[0] += 1;
+          if (equalPulse[0] < sumStep) {
+            for (i = 1; i < sumStep; i++) {
+              if (equalPulse[i] != 0) {
+                equalPulse[i] = count;
+                i = sumStep;
+              }
+            }
         } // if end
       } // for end    
     }// if end
-  } // if end
-} // proc end
+  } // proc end
+}
