@@ -1,0 +1,213 @@
+//controlling 3 stepping motor controller
+//must setting new (int totalswitch)
+//char totalswitch = a ~ c (1 stepping) d, e, f(1-2), (2-3), (1-3) g(1-2-3)
+//stepset() -> setting pulse -> end
+//before stepping operateion ending, must send serial signals
+//step = pulse * 2
+
+
+#define pulseTimer 2000
+#define limitrpm 870
+#define sumStep 3
+
+const int ENA[sumStep] = {5, 8, 11};
+const int DIR[sumStep] = {6, 9, 12};
+const int STEP[sumStep] = {7, 10, 13};
+
+//stepping control guide
+//setting int the charconverter not changed
+int stepPulse[sumStep] = {1000, 1000, 1000};
+//manually settign the amount of pulse count(maybe do not using anymore
+int stepCount[sumStep];
+//accelation value of stepping motor
+int stepAccel[sumStep] = {0, 0, 0};
+int accelLimit[sumStep] = {570, 570, 570};
+//if this value wil be > 0 then working before charconverter
+int remainPulse[sumStep];
+int worker[sumStep];
+// reading from python
+char ch;
+// using temporaly like for
+int count;
+int i;
+//stepping number, using in charconverter
+int stepno;
+//how many stepping works, set in the charconverter
+//worker will be setting 0 in stepmov
+//rx storage remain pulse  timer
+//if (rx < 0) then there is no working
+int rx;
+//saving remain pulse
+int steploop[2];
+//setting 3stepping motors (steps, pulse, maxpulse, acc)
+//using in dvacalculator
+
+int result;
+int dvapulse;
+//saves remain stepping pulse [stepno, pulse]
+int delaystep[2];
+//
+int steptimer;
+
+//using nuMeta
+int maxPulse[2];
+int minPulse[2];
+
+
+void setup() {
+    Serial.begin(115200);
+    for (i= 0; i < 3; i++) {
+       pinMode(ENA[i], OUTPUT);
+       digitalWrite(ENA[i], HIGH);
+       pinMode(DIR[i], OUTPUT);     
+       pinMode(STEP[i], OUTPUT);
+    }
+}
+
+//charconverter. reang serial information from pc
+//stepmov ->  dvastep() -> stepcal()
+//if there is remain steps then working remain proc
+
+void loop() {
+  stepCount[0] = 200;
+  if (Serial.available() > 0) {
+    ch = Serial.read();
+    rx = pulseTimer;
+    charconverter();
+    if (worker >= 0) {
+      steptimer = pulseTimer;
+      stepmove(); 
+    }
+  }
+}
+
+// # $ % = initiate setting stepping
+// 0~7 accelation setting
+// 89 setting dirextion
+void charconverter() {
+    if (35 <= ch && ch <= 37) {
+      switch (ch) {
+        case 35:
+          stepno = 0;
+          Serial.println ("setting stepping 1");
+          break;
+        case 36:
+          stepno = 1;
+          Serial.println ("setting stepping 2");   
+          break;
+        case 37:
+          stepno = 2;
+          Serial.println ("setting stepping 3");          
+          break;
+      }
+    } else if (48<= ch && ch <= 57) {
+      Serial.print ("setiing accelaration");
+      switch (ch) {
+        case 48:
+          stepAccel[stepno] = 0;
+          break;
+        case 49:
+          stepAccel[stepno] = 1;
+          break;
+        case 50:
+          stepAccel[stepno] = 2;
+          break;
+        case 51:
+          stepAccel[stepno] = 3;
+          break;
+        case 52:
+          stepAccel[stepno] = -1;
+          break;
+        case 53:
+          stepAccel[stepno] = -2;
+          break;
+        case 54:
+          stepAccel[stepno] = -3;
+          break;
+        case 55:
+          stepAccel[stepno] = (stepAccel[stepno] * 2);
+          break;
+        case 56:
+          digitalWrite(DIR[stepno], HIGH);
+          break;
+        case 57:
+          digitalWrite(DIR[stepno], LOW);
+          break;
+      } //end switch
+    } else if (97<= ch && ch <= 122) {
+      Serial.println ("setting pulse");
+    switch (ch) {
+      case 97:
+        stepPulse[stepno] = 800;
+        remainPulse[stepno] = 800;
+        break;
+      case 98:
+        stepPulse[stepno] = 1000;
+        remainPulse[stepno] = 1000;
+        break;
+      case 99:
+        stepPulse[stepno] = 2000;
+        remainPulse[stepno] = 2000;
+        break;
+      default:
+        break;            
+     } //end switch
+    } else if (65 <= ch && ch <= 90) {
+      Serial.println ("which wtepping will be on");
+      switch (ch) {
+        case 65:
+          activestep(1);
+          break;
+        case 66:
+          activestep(2);
+          break;
+        case 67:
+          activestep(3);
+          break;
+        default:
+          break;
+      } // switch end
+  } //end if
+} // end proc
+
+void activestep(int a) {
+  worker[0] += 1;
+  if (worker[0] != sumStep) {
+    for (i = 1; i <sumStep; i++) {
+      if (worker[i] == 0) {
+        worker[i] = a;
+      }
+    }
+  } //end if
+} //end proc
+
+void accelset() {
+    if (stepPulse[stepno] >= accelLimit[stepno]) {
+        stepPulse[stepno] = stepPulse[stepno] - stepAccel[stepno];
+    } else {
+        stepPulse[stepno] = accelLimit[stepno];
+    } // if end
+} //proc end
+
+void stepmove() {
+  
+}
+
+void nuMeta() {
+  if (worker[0] == sumStep) {
+    //doing operation 
+  } else if (worker[0] != 0) {
+    //savings the amount of active stepper
+    for (i = 1; i < sumStep; i++) {
+      if (minPulse[0] > stepPulse[i]) {
+        minPulse[0] = stepPulse[i];
+        minPulse[1] = i;
+        } else if (minPulse[0] = stepPulse[i]) {
+          equalPulse[0] = stepPulse[i];
+          equalPulse[1] += 1;
+          equalPulse[2] = i;
+        } // if end
+      } // for end    
+    }// if end
+  } // if end
+} // proc end
