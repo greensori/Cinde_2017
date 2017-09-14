@@ -56,6 +56,8 @@ int minPulse[2];
 
 int proclv;
 
+int preventDouble;
+
 
 void setup() {
     Serial.begin(115200);
@@ -64,9 +66,6 @@ void setup() {
        digitalWrite(ENA[i], HIGH);
        pinMode(DIR[i], OUTPUT);     
        pinMode(STEP[i], OUTPUT);
-    }
-    for (i = 1; i < sumStep; i++) {
-      worker[sumStep] = -1;
     }
 }
 
@@ -83,12 +82,12 @@ void loop() {
     if (proclv == 1) {
       proclv = 0;
       terminalStep = pulseTimer;
-      nuMeta();
-    }
-    //wprking end
-    if (terminalStep < 0 ) {
-      newStart(); 
-    }
+      while (terminalStep > 0) {
+        nuMeta();
+        stepidle();
+      }
+      newStart();
+    } // if proclv end 
   } // Serial read
 } // loop end
 
@@ -156,7 +155,8 @@ void charconverter() {
           break;
       } //end switch
     } else if (97<= ch && ch <= 122) {
-      Serial.println ("setting pulse");
+      Serial.print ("setting pulse_");
+      Serial.println (stepno);
     switch (ch) {
       case 97:
         stepPulse[stepno] = 800;
@@ -174,19 +174,25 @@ void charconverter() {
         break;            
      } //end switch
     } else if (65 <= ch && ch <= 90) {
-      Serial.println ("which wtepping will be on");
+      Serial.print ("Stepping on_");
       switch (ch) {
         case 65:
           activestep(0);
           Serial.println ("stepper 0 operate");
+          Serial.println (worker[0]);
+          Serial.println (worker[1]);
           break;
         case 66:
           activestep(1);
           Serial.println("stepper 1 operate");
+          Serial.println(worker[0]);
+          Serial.println(worker[1]);
           break;
         case 67:
           activestep(2);
           Serial.println("stepper 2 operate");
+          Serial.println (worker[0]);
+          Serial.println (worker[1]);
           break;
         case 68:
           proclv = 1;
@@ -199,15 +205,13 @@ void charconverter() {
 
 //to getting a active state stepping
 //end of stepmov worker will be initiating
-void activestep(int a) {
+void activestep(int a){
   worker[0] += 1;
   if (worker[0] < sumStep) {
-    for (i = 1; i < sumStep; i++) {
-      if (worker[i] < 0) {
-        worker[i] = a;
-        i = sumStep;
-      }
-    }
+    count = worker[0];
+    worker[count] = a;
+  } else if (worker[0] >= sumStep) {
+    worker[0] = 3;
   } //end if
 } //end proc
 
@@ -244,6 +248,7 @@ void temp1() {
 void nuMetastep() {
   //getting active stepnumber
   count = minPulse[1];
+  digitalWrite(ENA[count], LOW);
   digitalWrite(STEP[count], HIGH);
   delayMicroseconds(minPulse[0]);
   remainPulse[count] -= minPulse[0];
@@ -255,12 +260,16 @@ void nuMetastep() {
   }
 }
 
-void initstep() {
-  //starting operation
-}
+//nuMeta (set enable and stepstart)
+//idle (running while terminalStep > 0)
+//charconverter (to read)
+//if (remainPulse > 0 ) working
+//charconverter
 
 //idle end
 void stepidle() {
+  Serial.print ("working_");
+  Serial.println (minPulse[1]);
   count = minPulse[1];
   delayMicroseconds(minPulse[0]);
   digitalWrite(STEP[count], LOW);
@@ -272,6 +281,12 @@ void stepidle() {
   } else if (terminalStep <= 0) {
     digitalWrite(STEP[count], HIGH);
     digitalWrite(ENA[count], HIGH);
+  } // if end
+}
+
+void remainUser() {
+  for (i = 0; i < sumStep; i++) {
+    
   }
 }
 
@@ -280,10 +295,10 @@ void stepidle() {
 void nuMeta() {
   Serial.println ("enter nuMeta");
   if (worker[0] == 1) {
-    Serial.println ("single stepping on");
     count = worker[1];
+    digitalWrite(ENA[count], LOW);
     digitalWrite(STEP[count], HIGH);
-    minPulse[0] = stepPulse[count];
+    minPulse[0] = remainPulse[count];
     minPulse[1] = count;
   } else if (worker[0] == sumStep) {
   //when 3 stepper working  
@@ -292,9 +307,11 @@ void nuMeta() {
       digitalWrite(ENA[i], LOW);
     }         
   } else if (worker[0] > 0) {
-    Serial.println ("some stepping on");
+    Serial.println ("under 3 stepping on");
     //working over 2stepping
     //savings the amount of active stepper
+    count = worker[1];
+    minPulse[0] = remainPulse[count];
     for (i = 1; i < sumStep; i++) {
       count = worker[i];
       if (minPulse[0] > remainPulse[count]) {
@@ -306,7 +323,7 @@ void nuMeta() {
         Serial.println (minPulse[1]);
         for (i = 1; i < sumStep; i++) {
           equalPulse[i] = 0;
-        }
+          } //for end
         } else if (minPulse[0] = remainPulse[count]) {
           equalPulse[0] += 1;
           if (equalPulse[0] < sumStep) {
