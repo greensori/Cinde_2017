@@ -44,16 +44,19 @@ int steploop[2];
 //setting 3stepping motors (steps, pulse, maxpulse, acc)
 //using in dvacalculator
 
-int result;
-int dvapulse;
+//int result;
+//int dvapulse;
 //saves remain stepping pulse [stepno, pulse]
-int delaystep[2];
+//int delaystep[2];
 //
-int steptimer;
+//int steptimer;
 
 //using nuMeta
 int maxPulse[2];
 int minPulse[2];
+
+//level switch this contrl while process
+int proclv;
 
 
 void setup() {
@@ -76,12 +79,23 @@ void loop() {
     newStart();
     terminalStep = pulseTimer;
     charconverter();
+    Switch (proclv):
+        case 1:
+            //initiating phase
+            break;
+        case 2:
+            //idle phase
+            break;
+        case 3:
+            //terminal phase
+            break;
     if (worker >= 0) {
       steptimer = pulseTimer;
     }
   }
 }
 
+//initiating values
 void newStart() {
   for (i = 0; i < sumStep; i++) {
     equalPulse[i] = 0;
