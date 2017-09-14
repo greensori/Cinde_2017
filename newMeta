@@ -5,15 +5,16 @@
 //before stepping operateion ending, must send serial signals
 //step = pulse * 2
 
-
 #define pulseTimer 2000
-#define limitrpm 870
+#define limitrpm 570
 #define sumStep 3
 
 const int ENA[sumStep] = {5, 8, 11};
 const int DIR[sumStep] = {6, 9, 12};
 const int STEP[sumStep] = {7, 10, 13};
 
+// reading from controller(py)
+char ch;
 //stepping control guide
 //setting int the charconverter not changed
 int stepPulse[sumStep] = {1000, 1000, 1000};
@@ -27,8 +28,6 @@ int remainPulse[sumStep];
 //this two values have total/seperate stepping structure
 int equalPulse[sumStep];
 int worker[sumStep];
-// reading from python
-char ch;
 // using temporaly like for
 int count;
 int i;
@@ -44,28 +43,30 @@ int steploop[2];
 //setting 3stepping motors (steps, pulse, maxpulse, acc)
 //using in dvacalculator
 
-//int result;
-//int dvapulse;
+int result;
+int dvapulse;
 //saves remain stepping pulse [stepno, pulse]
-//int delaystep[2];
+int delaystep[2];
 //
-//int steptimer;
+int steptimer;
 
 //using nuMeta
 int maxPulse[2];
 int minPulse[2];
 
-//level switch this contrl while process
 int proclv;
 
 
 void setup() {
     Serial.begin(115200);
-    for (i= 0; i < 3; i++) {
+    for (i= 0; i < sumStep; i++) {
        pinMode(ENA[i], OUTPUT);
        digitalWrite(ENA[i], HIGH);
        pinMode(DIR[i], OUTPUT);     
        pinMode(STEP[i], OUTPUT);
+    }
+    for (i = 1; i < sumStep; i++) {
+      worker[sumStep] = -1;
     }
 }
 
@@ -76,26 +77,21 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
     ch = Serial.read();
-    newStart();
-    terminalStep = pulseTimer;
+    //newStart();
     charconverter();
-    Switch (proclv):
-        case 1:
-            //initiating phase
-            break;
-        case 2:
-            //idle phase
-            break;
-        case 3:
-            //terminal phase
-            break;
-    if (worker >= 0) {
-      steptimer = pulseTimer;
+    //stating operation 
+    if (proclv == 1) {
+      proclv = 0;
+      terminalStep = pulseTimer;
+      nuMeta();
     }
-  }
-}
+    //wprking end
+    if (terminalStep < 0 ) {
+      newStart(); 
+    }
+  } // Serial read
+} // loop end
 
-//initiating values
 void newStart() {
   for (i = 0; i < sumStep; i++) {
     equalPulse[i] = 0;
@@ -112,19 +108,19 @@ void charconverter() {
       switch (ch) {
         case 35:
           stepno = 0;
-          Serial.println ("setting stepping 1");
+          Serial.println ("setting stepping 0");
           break;
         case 36:
           stepno = 1;
-          Serial.println ("setting stepping 2");   
+          Serial.println ("setting stepping 1");   
           break;
         case 37:
           stepno = 2;
-          Serial.println ("setting stepping 3");          
+          Serial.println ("setting stepping 2");          
           break;
       }
     } else if (48<= ch && ch <= 57) {
-      Serial.print ("setiing accelaration");
+      Serial.println ("setiing accelaration");
       switch (ch) {
         case 48:
           stepAccel[stepno] = 0;
@@ -152,9 +148,11 @@ void charconverter() {
           break;
         case 56:
           digitalWrite(DIR[stepno], HIGH);
+          Serial.println ("setting dir high");
           break;
         case 57:
           digitalWrite(DIR[stepno], LOW);
+          Serial.println ("setting dir low");
           break;
       } //end switch
     } else if (97<= ch && ch <= 122) {
@@ -179,20 +177,24 @@ void charconverter() {
       Serial.println ("which wtepping will be on");
       switch (ch) {
         case 65:
-          activestep(1);
+          activestep(0);
+          Serial.println ("stepper 0 operate");
           break;
         case 66:
-          activestep(2);
+          activestep(1);
+          Serial.println("stepper 1 operate");
           break;
         case 67:
-          activestep(3);
+          activestep(2);
+          Serial.println("stepper 2 operate");
+          break;
+        case 68:
+          proclv = 1;
           break;
         default:
           break;
       } // switch end
   } //end if
-
-
 } // end proc
 
 //to getting a active state stepping
@@ -233,63 +235,91 @@ void temp1() {
   }
   delayMicroseconds (minPulse[1]);
 }
+//firstend makes all stepping enable
+//and getting a minPulse value then delay minPulse
+//after delay terminalPulse value is 0 then stop endn
+//nad terminalPulse isnt 0 then digitalwrite high and remainvalue is initiating
+//first end 
 
+void nuMetastep() {
+  //getting active stepnumber
+  count = minPulse[1];
+  digitalWrite(STEP[count], HIGH);
+  delayMicroseconds(minPulse[0]);
+  remainPulse[count] -= minPulse[0];
+  //if terminalStep < 0 then working end
+  terminalStep -= minPulse[0];
+  if (remainPulse[count] <= 0) {
+    digitalWrite(ENA[count], LOW);
+    remainPulse[count] = stepPulse[count];
+  }
+}
+
+void initstep() {
+  //starting operation
+}
+
+//idle end
+void stepidle() {
+  count = minPulse[1];
+  delayMicroseconds(minPulse[0]);
+  digitalWrite(STEP[count], LOW);
+  remainPulse[count] -= minPulse[0];
+  terminalStep -= minPulse[0];
+  if (terminalStep > 0) {
+    digitalWrite(STEP[count], HIGH);
+    remainPulse[count] = stepPulse[count];
+  } else if (terminalStep <= 0) {
+    digitalWrite(STEP[count], HIGH);
+    digitalWrite(ENA[count], HIGH);
+  }
+}
+
+//getting min  pulse value
+//making step signal to low
 void nuMeta() {
-  //when 3 stepper working
-  if (worker[0] == sumStep) {
+  Serial.println ("enter nuMeta");
+  if (worker[0] == 1) {
+    Serial.println ("single stepping on");
+    count = worker[1];
+    digitalWrite(STEP[count], HIGH);
+    minPulse[0] = stepPulse[count];
+    minPulse[1] = count;
+  } else if (worker[0] == sumStep) {
+  //when 3 stepper working  
+    Serial.println ("all stepping on");
     for (i = 0; i < sumStep; i++) {
       digitalWrite(ENA[i], LOW);
-    }
+    }         
   } else if (worker[0] > 0) {
+    Serial.println ("some stepping on");
+    //working over 2stepping
     //savings the amount of active stepper
     for (i = 1; i < sumStep; i++) {
       count = worker[i];
-      if (minPulse[0] > stepPulse[count]) {
-        minPulse[0] = stepPulse[count];
+      if (minPulse[0] > remainPulse[count]) {
+        minPulse[0] = remainPulse[count];
         minPulse[1] = count;
         equalPulse[0] = count;
+        Serial.print ("minPulse : ");
+        Serial.println (minPulse[0]);
+        Serial.println (minPulse[1]);
         for (i = 1; i < sumStep; i++) {
           equalPulse[i] = 0;
         }
-        } else if (minPulse[0] = stepPulse[count]) {
+        } else if (minPulse[0] = remainPulse[count]) {
           equalPulse[0] += 1;
           if (equalPulse[0] < sumStep) {
             for (i = 1; i < sumStep; i++) {
               if (equalPulse[i] != 0) {
                 equalPulse[i] = count;
                 i = sumStep;
+                Serial.println (equalPulse[0]);
+                Serial.println (equalPulse[1]);
               }
             }
         } // if end
       } // for end    
     }// if end
   } // proc end
-}
-
-
-//
-    digitalWrite(ENA[minPulse[1]], HIGH):
-    delaymicroseconds(minPulse[0]);
-    digitalWrite(ENA[minPuklse[1], LOW);
-
-for (i = 0; i < sumStep; i++) {
-    remainPulse[i] -= minPulse[0]
-    if (remainPulse[i] <= 0) {
-      remainPulse[i] = stepPulse[i];
-      }
-}
-
-// if (equalPulse[0] == sumStep) {
-    for (i = 0; i < sumStep; i++) {
-        digitalWrite((ENA[i], HIGH);
-    }
-    delayMicroseconds(minPulse[0]);
-    for (i = 0; i < sumStep; i++) {
-        digitalWrite((ENA[i], LOW);
-    } else if (equalPuse > 1 && equalPulse[0] < sumStep) {
-    for (i = 1; i < sumStep; i++) {
-        if (equalPulse[i] > 0 ){
-            digitalWrite(ENA[i], HIGH);
-          }
-    }
 }
