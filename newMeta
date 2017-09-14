@@ -5,7 +5,7 @@
 //before stepping operateion ending, must send serial signals
 //step = pulse * 2
 
-#define pulseTimer 2000
+#define pulseTimer 4000
 #define limitrpm 570
 #define sumStep 3
 
@@ -53,6 +53,7 @@ int steptimer;
 //using nuMeta
 int maxPulse[2];
 int minPulse[2];
+int formax;
 
 int proclv;
 
@@ -285,8 +286,7 @@ void stepidle() {
 }
 
 void remainUser() {
-  for (i = 0; i < sumStep; i++) {
-    
+  for (i = 0; i < sumStep; i++) {    
   }
 }
 
@@ -310,9 +310,10 @@ void nuMeta() {
     Serial.println ("under 3 stepping on");
     //working over 2stepping
     //savings the amount of active stepper
+    formax = (worker[0] + 1);
     count = worker[1];
     minPulse[0] = remainPulse[count];
-    for (i = 1; i < sumStep; i++) {
+    for (i = 1; i < formax; i++) {
       count = worker[i];
       if (minPulse[0] > remainPulse[count]) {
         minPulse[0] = remainPulse[count];
@@ -321,9 +322,13 @@ void nuMeta() {
         Serial.print ("minPulse : ");
         Serial.println (minPulse[0]);
         Serial.println (minPulse[1]);
+        //minpulse value is renewed then equal value will be renewed too
         for (i = 1; i < sumStep; i++) {
           equalPulse[i] = 0;
           } //for end
+        } else if (minPulse[0] < remainPulse[count]) {
+          Serial.print ("minpulse_");
+          Serial.println (minPulse[0]);
         } else if (minPulse[0] = remainPulse[count]) {
           equalPulse[0] += 1;
           if (equalPulse[0] < sumStep) {
