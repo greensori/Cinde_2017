@@ -53,6 +53,7 @@ int steptimer;
 //using nuMeta
 int maxPulse[2];
 int minPulse[2];
+int tmpWorker;
 int formax;
 
 int proclv;
@@ -272,13 +273,19 @@ void stepidle() {
   Serial.print ("working_");
   Serial.println (minPulse[1]);
   count = minPulse[1];
+  formax = worker[0];
   delayMicroseconds(minPulse[0]);
   digitalWrite(STEP[count], LOW);
-  remainPulse[count] -= minPulse[0];
+  for ( i = 1; i < formax; i++) {
+    tmpWorker = worker[i];
+    remainPulse[tmpWorker] -= minPulse[0];
+    if (remainPulse[tmpWorker] <= 0) {
+      remainPulse[tmpWorker] = stepPulse[tmpWorker];
+      }
+    }
   terminalStep -= minPulse[0];
   if (terminalStep > 0) {
     digitalWrite(STEP[count], HIGH);
-    remainPulse[count] = stepPulse[count];
   } else if (terminalStep <= 0) {
     digitalWrite(STEP[count], HIGH);
     digitalWrite(ENA[count], HIGH);
@@ -345,4 +352,3 @@ void nuMeta() {
     }// if end
   } // proc end
 }
-
