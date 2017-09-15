@@ -1,0 +1,34 @@
+#define d 3
+
+int a[d] = {430, 240, 310};
+int tempa[d] = {430, 240, 310};
+
+int terminal = 4000;
+int result;
+int i;
+
+void setup() {
+  Serial.begin(115200);
+
+}
+
+void loop() {
+  while (terminal > 0) {
+  result = tempa[0];
+  for (i = 0; i < d; i++) {
+    if (result > tempa[i] ) {
+      result = tempa[i];
+    }
+    } // for end
+  delay (result);
+  terminal -= result;
+  for (i = 0; i < d; i++) {
+    tempa[i] -= result;
+    if (tempa[i] <= 0) {
+      tempa[i] = a[i];
+    }
+  }
+  Serial.println (result);
+  Serial.println(terminal); 
+  }
+}
