@@ -1,34 +1,56 @@
-#define d 3
+#define sumStep 3
 
-int a[d] = {430, 240, 310};
-int tempa[d] = {430, 240, 310};
+const int ENA[sumStep] = {22, 26, 30};
+const int DIR[sumStep] = {24, 28, 32};
+const int STEP[sumStep] = {25, 29, 33};
 
-int terminal = 4000;
-int result;
+int a[sumStep] = {1550,  2000, 2200};
+int tempa[sumStep] = {1550,  2000, 2200};
+
+int count;
+int terminal = 50000;
+int result[2];
 int i;
+int onstep;
 
 void setup() {
   Serial.begin(115200);
-
+    for (i= 0; i < sumStep; i++) {
+       pinMode(ENA[i], OUTPUT);
+       digitalWrite(ENA[i], LOW);
+       pinMode(DIR[i], OUTPUT);     
+       pinMode(STEP[i], OUTPUT);
+    }
 }
 
 void loop() {
+  for (i = 0; i < sumStep; i++) {
+    digitalWrite(STEP[i], HIGH);
+  }
   while (terminal > 0) {
-  result = tempa[0];
-  for (i = 0; i < d; i++) {
-    if (result > tempa[i] ) {
-      result = tempa[i];
+  result[0] = tempa[0];
+  for (i = 0; i < sumStep; i++) {
+    if (result[0] > tempa[i] ) {
+      result[0] = tempa[i];
+      result[1] = i;
     }
     } // for end
-  delay (result);
-  terminal -= result;
-  for (i = 0; i < d; i++) {
-    tempa[i] -= result;
+  onstep = result[1];
+  Serial.print ("stepp working_");
+  Serial.println (result[1]);
+  delayMicroseconds (result[0]);
+  Serial.println (result[0]);
+  count++;
+  digitalWrite(STEP[onstep],HIGH);
+  digitalWrite(STEP[onstep], LOW);
+  terminal -= result[0];
+  for (i = 0; i < sumStep; i++) {
+    tempa[i] -= result[0];
     if (tempa[i] <= 0) {
       tempa[i] = a[i];
     }
   }
-  Serial.println (result);
+  Serial.println (result[0]);
   Serial.println(terminal); 
   }
 }
