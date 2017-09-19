@@ -12,21 +12,21 @@
 const int ENA[sumStep] = {5, 8, 11};
 const int DIR[sumStep] = {6, 9, 12};
 const int STEP[sumStep] = {7, 10, 13};
+const int accelLimit[sumStep] = {570, 570, 570};
 
 // reading from controller(py)
 char ch;
 //stepping control guide
-//setting int the charconverter not changed
-int stepPulse[sumStep] = {1000, 1000, 1000};
-//manually settign the amount of pulse count(maybe do not using anymore
+//setting int and charconverter does not changed
+int stepPulse[sumStep];
+//manually settign the amount of pulse count(##maybe do not using anymore
 int stepCount[sumStep];
 //accelation value of stepping motor
-int stepAccel[sumStep] = {0, 0, 0};
-int accelLimit[sumStep] = {570, 570, 570};
+int stepAccel[sumStep];
 //if this value wil be > 0 then working before charconverter
 int remainPulse[sumStep];
 //this two values have total/seperate stepping structure
-int equalPulse[sumStep] = {0, 0, 0};
+int equalPulse[sumStep];
 int worker[sumStep];
 //stepping number, using in charconverter
 int stepno;
@@ -51,6 +51,7 @@ int maxPulse[2];
 int minPulse[2];
 int tmpWorker;
 
+//starting tag
 int proclv;
 
 void setup() {
