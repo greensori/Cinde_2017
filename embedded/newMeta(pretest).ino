@@ -80,6 +80,12 @@ void loop() {
         nuMeta();
         stepidle();
       }
+      /*
+      while (sumremain() > 0) {
+        nuMeta();
+        terStep();
+      }
+      */
       newStart();
       Serial.println ("working end----------------------");
     } // if proclv end 
@@ -184,8 +190,8 @@ void charconverter() {
         remainPulse[stepno] = 1000;
         break;
       case 99:
-        stepPulse[stepno] = 2000;
-        remainPulse[stepno] = 2000;
+        stepPulse[stepno] = 2090;
+        remainPulse[stepno] = 2090;
         break;
       default:
         break;            
@@ -243,34 +249,74 @@ void accelset() {
 } //proc end
 
 
-
 void stepidle() {
   Serial.print ("working_stepping ---------------------");
   Serial.println (minPulse[1]);
   count = minPulse[1];
   delayMicroseconds(minPulse[0]);
+  if (equalPulse[0] == 3) { // #if
+    for (i = 0; i < sumStep; i++) { // ## for
+      digitalWrite(STEP[i], LOW);
+      digitalWrite(STEP[i], HIGH);
+    } // ##for end
+  } else if (equalPulse[0] > 1) {
+     for (i = 1; i <= equalPulse[0]; i++) { // ##for
+       count = equalPulse[i];
+       digitalWrite(STEP[count], LOW);
+       digitalWrite(STEP[count], HIGH);
+     } // ## for end
+  }// #if end
   digitalWrite(STEP[count], LOW);
-  delay(3000); // add delay in here
-  for ( i = 1; i <= worker[0]; i++) {
-    tmpWorker = worker[i];
-    remainPulse[tmpWorker] -= minPulse[0];
-    if (remainPulse[tmpWorker] <= 0) {
-      remainPulse[tmpWorker] = stepPulse[tmpWorker];
-      }
-    }
+  //delay(3000); // add delay in here
+  if (worker[0] == sumStep) { // #if 
+    for (i = 0; i < sumStep; i++ ) { // ## for
+      remainPulse[i] -= minPulse[0];
+      if (remainPulse[i] <= 0 && terminalStep > 0) { // ###if
+        remainPulse[i] = stepPulse[i];
+      } //### if end
+    } // ## for end
+  } else if (worker[0] > 0) {
+    for ( i = 1; i <= worker[0]; i++) { // ## for
+      tmpWorker = worker[i];
+      remainPulse[tmpWorker] -= minPulse[0];
+      if (remainPulse[tmpWorker] <= 0 && terminalStep > 0) { // ###if
+        remainPulse[tmpWorker] = stepPulse[tmpWorker];
+      } //### if end
+    } // ##for end
+  }// #if end
   terminalStep -= minPulse[0];
   Serial.print ("pulse_");
   Serial.println (minPulse[0]);
   Serial.print ("remain_");
   Serial.println (terminalStep);
-  if (terminalStep > 0) {
-    digitalWrite(STEP[count], HIGH);
-  } else if (terminalStep <= 0) {
-    digitalWrite(STEP[count], HIGH);
-    digitalWrite(ENA[count], HIGH);
-  } // if end
-}
+  digitalWrite(STEP[count], HIGH);
+} // proc end
 
+
+void terStep() {
+  Serial.print ("working_stepping ---------------------");
+  Serial.println (minPulse[1]);
+  count = minPulse[1];
+  delayMicroseconds(minPulse[0]);
+  digitalWrite(STEP[count], LOW);
+  //delay(3000); // add delay in here
+  if (worker[0] == sumStep) { // #if 
+    for (i = 0; i < sumStep; i++ ) { // ## for
+      remainPulse[i] -= minPulse[0];
+    } // ## for end
+  } else if (worker[0] > 0) {
+    for ( i = 1; i <= worker[0]; i++) { // ## for
+      tmpWorker = worker[i];
+      remainPulse[tmpWorker] -= minPulse[0];
+    } // ##for end
+  }// #if end
+  Serial.print ("pulse_");
+  Serial.println (minPulse[0]);
+  Serial.print ("remain_");
+  Serial.println (terminalStep);
+  digitalWrite(STEP[count], HIGH);
+  Serial.println ("terminal phase --------------------------");
+} //proc end
 
 void nuMeta() {
   if (worker[0] == sumStep){ //# if_ when worker[0] value has same as sumstep
@@ -315,7 +361,33 @@ void nuMeta() {
         } else if (equalPulse[0] >= sumStep) {
           equalPulse[0] = sumStep;
         } //#### if end
-      }// ### if end
-    } // ## for end            
+      } // ### if end
+    } // ## for end
   } // #if end
 } // proc end
+
+
+int sumremain() { 
+  count = 0;
+  countA = 0;
+  if (worker[0] == sumStep) { //#if
+    for ( i = 0; i < sumStep; i++) { // ## for
+      if (remainPulse[i] > 0) { // ### if
+        count += remainPulse[i];
+      } // ### if end
+    } // ## for end
+    Serial.print ("result________________");
+    Serial.println (count);
+    return count;
+  } else if (worker[0] > 0) {
+    for (i = 1; i < sumStep; i++) { // ## for
+      countA = worker[i];
+      if (remainPulse[countA] > 0) { // ### if 
+       count += remainPulse[countA];
+      } // ### if end
+    } // ## for end
+    Serial.print ("result________________");
+    Serial.println (count);
+    return count;
+  } // #if end
+} //proc end
