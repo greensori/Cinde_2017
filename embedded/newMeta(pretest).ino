@@ -5,13 +5,15 @@
 //before stepping operateion ending, must send serial signals
 //step = pulse * 2
 
-#define pulseTimer 4000
+#define baudrate 115200
+#define pulseTimer 50000
 #define limitrpm 570
 #define sumStep 3
 
-const int ENA[sumStep] = {5, 8, 11};
-const int DIR[sumStep] = {6, 9, 12};
-const int STEP[sumStep] = {7, 10, 13};
+
+const int ENA[sumStep] = {22, 32, 40};
+const int DIR[sumStep] = {26, 36, 44};
+const int STEP[sumStep] = {27, 37, 45};
 const int accelLimit[sumStep] = {570, 570, 570};
 
 // reading from controller(py)
@@ -55,7 +57,7 @@ int tmpWorker;
 int proclv;
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(baudrate);
     for (i= 0; i < sumStep; i++) {
        pinMode(ENA[i], OUTPUT);
        digitalWrite(ENA[i], HIGH);
