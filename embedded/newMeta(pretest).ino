@@ -97,12 +97,12 @@ void initPulse() {
       Serial.println (i);
     }
   } else if (worker[0] > 0) {
-    for (i = 1; i < sumStep; i++) {
-    count = worker[i];
-    digitalWrite(ENA[count], LOW);
-    digitalWrite(STEP[count], HIGH);
-    Serial.print ("pin enable_");
-    Serial.println (count);
+    for (i = 1; i <= worker[0]; i++) {
+      count = worker[i];
+      digitalWrite(ENA[count], LOW);
+      digitalWrite(STEP[count], HIGH);
+      Serial.print ("pin enable_");
+      Serial.println (count);
     }// for end
   }//if end
 }// proc end
