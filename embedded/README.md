@@ -2,4 +2,6 @@
 
 working great but if i cant simplify proc(charconverter) then cant using this scripts
 
-to using many times on charconverter scripts
+maybe proc(charconverter) using lots of time
+
+must simplify present scripts or find another method
