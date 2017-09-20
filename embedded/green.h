@@ -6,13 +6,14 @@
 class green
 {
   private:
-    int _pin;
-    int i;
+    int temp;
+    int _i;
   public:
-    green(int sumStep);
-    void on(int STEP);
-    void ter(int ENA, int STEP);
+    green(int a);
+    void active(int enano, int stepno);
+    void Terminal(int enano, int stepno);
     void idle(int STEP, int sleep);
+    int digitno(char c, int digit);
 };
 
 #endif
