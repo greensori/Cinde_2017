@@ -14,7 +14,10 @@ int count = 4;
 int pulse = 0;
 char ch;
 
-int preventdoubleENA;
+int preventdoubleENA = 0;
+
+int pinno;
+int setdir
 
 int i;
 
@@ -42,11 +45,25 @@ void loop() {
         pulse = 0;
         count = 4;
         Serial.println ("stepping work");
+      } else if (preventdoubleENA == 1) {
+        if (65 <= ch && ch <=90) {
+          setdir = 1;
+          pinno = (ch - 65);
+        } else if (97 <= ch && ch <= 122) {
+          setdir = 2;
+          pinno = (ch - 97);
+        }
+        green.idle(STEP[pinno], DIR[pinno], setdir);
+      } else if (ch == 0) {
+        for ( i = 0; i < sumStep; i++) { // ####for
+          green.active(ENA[i], STEP[i]);
+        } // #### for end
+        preventdoubleENA = 1;
       } // ### if end
     } // ## if end
-    green.idle(2, pulse);
   } else {
     Serial.println ("stepping off");
+    preventdoubleENA = 0;
     for ( i = 0; i < sumStep; i++) {
       green.Terminal(ENA[i], STEP[i]);
     }
