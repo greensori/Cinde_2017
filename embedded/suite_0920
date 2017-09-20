@@ -17,7 +17,7 @@ char ch;
 int preventdoubleENA = 0;
 
 int pinno;
-int setdir
+int setdir;
 
 int i;
 
@@ -42,10 +42,10 @@ void loop() {
       if (count == 0) { // ### if_ stepping work phase
         Serial.print ("pulse : ");
         Serial.println (pulse);
-        pulse = 0;
         count = 4;
         Serial.println ("stepping work");
-      } else if (preventdoubleENA == 1) {
+       } // ###if end
+      }else if (preventdoubleENA == 1) {
         if (65 <= ch && ch <=90) {
           setdir = 1;
           pinno = (ch - 65);
@@ -53,19 +53,25 @@ void loop() {
           setdir = 2;
           pinno = (ch - 97);
         }
+        delayMicroseconds(pulse);
         green.idle(STEP[pinno], DIR[pinno], setdir);
-      } else if (ch == 0) {
+      } else if (ch == 33) {
+        Serial.println ("enter");
         for ( i = 0; i < sumStep; i++) { // ####for
           green.active(ENA[i], STEP[i]);
         } // #### for end
         preventdoubleENA = 1;
-      } // ### if end
-    } // ## if end
-  } else {
-    Serial.println ("stepping off");
-    preventdoubleENA = 0;
-    for ( i = 0; i < sumStep; i++) {
-      green.Terminal(ENA[i], STEP[i]);
-    }
-  } // # serial end
+      } // ### if end 
+    } else {
+      green.tester(ENA[2], STEP[2], 800);
+      /*
+      if (preventdoubleENA != 2) {
+      Serial.println ("stepping off");
+      preventdoubleENA = 2;
+      for ( i = 0; i < sumStep; i++) {
+        green.Terminal(ENA[i], STEP[i]);
+      }
+      }
+      */
+   } // # serial end
 }
