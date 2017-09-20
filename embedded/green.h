@@ -7,12 +7,12 @@ class green
 {
   private:
     int temp;
-    int _i;
+    int pinno;
   public:
     green(int a);
     void active(int enano, int stepno);
     void Terminal(int enano, int stepno);
-    void idle(int STEP, int sleep);
+    void idle(int d, int e, int f);
     int digitno(char c, int digit);
 };
 
