@@ -1,0 +1,54 @@
+#include "green.h"
+
+#define baudrate 115200
+#define sumStep 3
+
+const int ENA[sumStep] = {22, 32, 40};
+const int DIR[sumStep] = {26, 36, 44};
+const int STEP[sumStep] = {27, 37, 45};
+
+const int digit[3] = {1000, 100, 10};
+
+// if count value under 0 then stepping running, and initiate
+int count = 4;
+int pulse = 0;
+char ch;
+
+int preventdoubleENA;
+
+int i;
+
+green green(0);
+
+void setup() {
+  Serial.begin(baudrate);
+  for (i= 0; i < sumStep; i++) {
+    pinMode(ENA[i], OUTPUT);
+    digitalWrite(ENA[i], HIGH);
+    pinMode(DIR[i], OUTPUT);     
+    pinMode(STEP[i], OUTPUT);
+  }  
+}
+
+void loop() {
+  if (Serial.available() > 0 ) { // # if
+    ch = Serial.read();
+    if (ch >= 48 && ch <= 57) { // ## if
+      pulse += green.digitno(ch, count);
+      count -= 1;
+      if (count == 0) { // ### if_ stepping work phase
+        Serial.print ("pulse : ");
+        Serial.println (pulse);
+        pulse = 0;
+        count = 4;
+        Serial.println ("stepping work");
+      } // ### if end
+    } // ## if end
+    green.idle(2, pulse);
+  } else {
+    Serial.println ("stepping off");
+    for ( i = 0; i < sumStep; i++) {
+      green.Terminal(ENA[i], STEP[i]);
+    }
+  } // # serial end
+}
