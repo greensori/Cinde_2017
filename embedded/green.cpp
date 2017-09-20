@@ -6,19 +6,24 @@ green::green(int a)
   temp = a;
 }
 
-void green::active(int STEP) {
-  digitalWrite(STEP, HIGH);  
-}
-
-void green::Terminal(int enano, int stepno) {
+void green::active(int enano, int stepno) {
   digitalWrite(enano, LOW);
   digitalWrite(stepno, HIGH);
 }
 
-void green::idle(int STEP, int sleep) {
-  delayMicroseconds(sleep);
-  digitalWrite(STEP, LOW);
-  digitalWrite(STEP, HIGH);
+void green::Terminal(int enano, int stepno) {
+  digitalWrite(enano, HIGH);
+  digitalWrite(stepno, LOW);
+}
+
+void green::idle(int d, int e, int f) {
+  if ( f == 1) {
+    digitalWrite(e, HIGH);
+  } else if ( f == 2) {
+    digitalWrite(e, LOW);
+  }
+  digitalWrite(d, LOW);
+  digitalWrite(d, HIGH);
 }
 
 int green::digitno(char c, int digit) {
