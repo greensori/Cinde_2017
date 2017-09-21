@@ -40,19 +40,19 @@ void loop() {
       pulse += green.digitno(ch, count);
       count -= 1;
       if (count == 0) {
+        delayMicroseconds(pulse);
         pulse = 0;
         count = 4;
-       }
-      }else if (preventdoubleENA == 1) {
-        if (65 <= ch && ch <=90) {
-          setdir = 1;
-          pinno = (ch - 65);
-        } else if (97 <= ch && ch <= 122) {
-          setdir = 2;
-          pinno = (ch - 97);
         }
-        delayMicroseconds(pulse);
-        green.idle(STEP[pinno], DIR[pinno], setdir);
+      } else if (preventdoubleENA == 1) {
+          if (65 <= ch && ch <=90) {
+            setdir = 1;
+            pinno = (ch - 65);
+          } else if (97 <= ch && ch <= 122) {
+            setdir = 2;
+            pinno = (ch - 97);
+          }
+      green.idle(STEP[pinno], DIR[pinno], setdir);
       } else if (ch == 33) {
         for ( i = 0; i < sumStep; i++) {
           green.active(ENA[i], STEP[i]);
