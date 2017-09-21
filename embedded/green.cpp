@@ -7,8 +7,6 @@ green::green(int a)
 }
 
 void green::active(int enano, int stepno) {
-  Serial.print ("serial pin___");
-  Serial.println (enano);
   digitalWrite(enano, LOW);
   digitalWrite(stepno, HIGH);
 }
@@ -41,8 +39,6 @@ int green::digitno(char c, int digit) {
       temp = (temp * 10);
       break;    
   }
-    Serial.print ("read from _");
-    Serial.println (temp);
     return temp;
 }
 
