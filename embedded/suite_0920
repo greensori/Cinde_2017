@@ -40,6 +40,7 @@ void loop() {
       pulse += green.digitno(ch, count);
       count -= 1;
       if (count == 0) {
+        pulse = 0;
         count = 4;
        }
       }else if (preventdoubleENA == 1) {
