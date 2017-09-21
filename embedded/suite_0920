@@ -34,17 +34,14 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0 ) { // # if
+  if (Serial.available() > 0 ) {
     ch = Serial.read();
-    if (ch >= 48 && ch <= 57) { // ## if
+    if (ch >= 48 && ch <= 57) {
       pulse += green.digitno(ch, count);
       count -= 1;
-      if (count == 0) { // ### if_ stepping work phase
-        Serial.print ("pulse : ");
-        Serial.println (pulse);
+      if (count == 0) {
         count = 4;
-        Serial.println ("stepping work");
-       } // ###if end
+       }
       }else if (preventdoubleENA == 1) {
         if (65 <= ch && ch <=90) {
           setdir = 1;
@@ -56,21 +53,19 @@ void loop() {
         delayMicroseconds(pulse);
         green.idle(STEP[pinno], DIR[pinno], setdir);
       } else if (ch == 33) {
-        Serial.println ("enter");
-        for ( i = 0; i < sumStep; i++) { // ####for
+        for ( i = 0; i < sumStep; i++) {
           green.active(ENA[i], STEP[i]);
-        } // #### for end
+        }
         preventdoubleENA = 1;
-      } // ### if end 
+      }
     } else {
       green.tester(ENA[2], STEP[2], 800);
       /*
       if (preventdoubleENA != 2) {
-      Serial.println ("stepping off");
-      preventdoubleENA = 2;
-      for ( i = 0; i < sumStep; i++) {
-        green.Terminal(ENA[i], STEP[i]);
-      }
+        preventdoubleENA = 2;
+        for ( i = 0; i < sumStep; i++) {
+          green.Terminal(ENA[i], STEP[i]);
+        }
       }
       */
    } // # serial end
