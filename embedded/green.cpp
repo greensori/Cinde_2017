@@ -1,9 +1,12 @@
 #include "Arduino.h"
 #include "green.h"
 
-green::green(int a)
+#define intmaker 48
+
+green::green(int d)
 {
-  temp = a;
+  _count = d;
+  _digitsum = 0;
 }
 
 void green::active(int enano, int stepno) {
@@ -26,20 +29,22 @@ void green::idle(int d, int e, int f) {
   digitalWrite(d, HIGH);
 }
 
-int green::digitno(char c, int digit) {
-  temp = (c - 48);
+int green::asciino(char d, int digit) {
   switch (digit) {
-    case 4:
-      temp = (temp * 1000);
-      break;
     case 3:
-      temp = (temp * 100);
+      _digitsum = 0;
+      _digitsum += ((d - intmaker) * 1000);
       break;
     case 2:
-      temp = (temp * 10);
-      break;    
+      _digitsum += ((d - intmaker) * 100);
+      break;
+    case 1:
+      _digitsum += ((d - intmaker) * 10);
+      break;
+    case 0:
+      _digitsum += (d - intmaker);
+      return _digitsum;
   }
-    return temp;
 }
 
 
@@ -48,4 +53,9 @@ void green::tester(int d, int e, int f) {
   digitalWrite(d, LOW);
   digitalWrite(e, LOW);
   digitalWrite(e, HIGH);
+}
+
+int green::regional(int d) {
+  temp += d;
+  return intmaker;
 }
