@@ -6,14 +6,19 @@
 class green
 {
   private:
+    int _digitsum;
     int temp;
+    int result;
+    int _count;
     int pinno;
   public:
     green(int a);
     void active(int enano, int stepno);
     void Terminal(int enano, int stepno);
     void idle(int d, int e, int f);
-    int digitno(char c, int digit);
+    void tester(int d, int e, int f);
+    int asciino(char d, int digit);
+    int regional(int d);
 };
 
 #endif
