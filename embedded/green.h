@@ -17,7 +17,7 @@ class green
     void Terminal(int enano, int stepno);
     void idle(int d, int e, int f);
     void tester(int d, int e, int f);
-    int asciino(char d, int digit);
+    int asciino(int d, int digit);
     int regional(int d);
 };
 
