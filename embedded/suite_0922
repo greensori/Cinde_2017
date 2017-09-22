@@ -1,0 +1,41 @@
+//calculating signals in serial
+
+#include "green.h"
+
+green green(4);
+
+int i;
+int digitcount = 3;
+int result;
+
+char ch;
+char tempch[4];
+
+void setup() {
+  Serial.begin(115200);
+}
+
+void loop() {
+  if (Serial.available()) {
+    ch = Serial.read();
+    charsort(ch);
+  }
+}
+
+void charsort(char c) {
+  if (c >= 48 && ch <= 57) {
+    tempch[digitcount] = ch;
+    digitcount -= 1;
+    if (digitcount < 0) {
+      digitcount = 3;
+      Serial.println (asciiresult());
+    }
+  }
+}
+
+int asciiresult() {
+  for ( i = 3; i > 0; i--) {
+    green.asciino(tempch[i], i);
+  }
+  return green.asciino(tempch[0], 0); 
+}
