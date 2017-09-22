@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "green.h"
 
-#define intmaker 48
+#define tempuse 48
 
 green::green(int d)
 {
@@ -29,20 +29,20 @@ void green::idle(int d, int e, int f) {
   digitalWrite(d, HIGH);
 }
 
-int green::asciino(char d, int digit) {
+int green::asciino(int d, int digit) {
   switch (digit) {
     case 3:
       _digitsum = 0;
-      _digitsum += ((d - intmaker) * 1000);
+      _digitsum += (d * 1000);
       break;
     case 2:
-      _digitsum += ((d - intmaker) * 100);
+      _digitsum += (d * 100);
       break;
     case 1:
-      _digitsum += ((d - intmaker) * 10);
+      _digitsum += (d  * 10);
       break;
     case 0:
-      _digitsum += (d - intmaker);
+      _digitsum += (d);
       return _digitsum;
   }
 }
@@ -57,5 +57,5 @@ void green::tester(int d, int e, int f) {
 
 int green::regional(int d) {
   temp += d;
-  return intmaker;
+  return tempuse;
 }
