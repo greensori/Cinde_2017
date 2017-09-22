@@ -2,14 +2,16 @@
 
 #include "green.h"
 
+#define intmaker 48
+
 green green(4);
 
 int i;
 int digitcount = 3;
 int result;
+int tempch[4];
 
 char ch;
-char tempch[4];
 
 void setup() {
   Serial.begin(115200);
@@ -24,7 +26,7 @@ void loop() {
 
 void charsort(char c) {
   if (c >= 48 && ch <= 57) {
-    tempch[digitcount] = ch;
+    tempch[digitcount] = (ch - intmaker);
     digitcount -= 1;
     if (digitcount < 0) {
       digitcount = 3;
