@@ -1,0 +1,14 @@
+
+char ch = 'a';
+
+void setup() {
+  Serial.begin(115200);
+  Serial3.begin(9600);
+
+}
+
+void loop() {
+  Serial3.write(ch);
+  delay(2000);
+
+}
