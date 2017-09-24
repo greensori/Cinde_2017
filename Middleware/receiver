@@ -4,12 +4,9 @@ from multiprocessing import Process
 import time
 
 ard = serial.Serial('COM3', 19200)
-tagword = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz']
-resultpt = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-accel = [0, 0, 0]
-gyro = [0, 0, 0]
-magnet = [0, 0, 0]
-
+tagword = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz', 'end']
+resultpt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+agm = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 def gy91():
     while True:
@@ -17,6 +14,7 @@ def gy91():
         time.sleep(0.5)
         msg = ''
         msg = ard.read(ard.inWaiting())
+        print msg
         if msg <> '':
             try:
                 for i in tagword:
@@ -27,19 +25,16 @@ def gy91():
                 count = 0
                 print 'no word'
                 pass
-            print resultpt
-            if count == 9:
-                count = 0
-                ptax = [resultpt[0], (resultpt[1] - 1)]
-                print 'ax value'
-                print msg[ptax[0]: ptax[1]]
-                print ptax
-                print 'accel'
-                print accel
-                print 'gyro'
-                print gyro
-                print 'magnet'
-                print magnet
+            if count == 10:
+                for i in range(count - 1):
+                    pos = [resultpt[i] + 3, (resultpt[(i+1)] - 1)]
+                    agm[i] = msg[pos[0]: pos[1]]
+            count = 0
+            print 'sensor value'
+            print agm
 
+# dof10 value is not 0 then getting more indata
+## at the next indtata cutting msg before dof10
+## and make new msg starting 10dof
 
 gy91()
