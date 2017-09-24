@@ -1,3 +1,4 @@
+
 # green controller
 
 stepping motor control setting
@@ -19,6 +20,8 @@ need to step to reach from 380 to 950 = 1100step
  * important dont setting delays after LOW signals on step (just when using planetary geared stepping motor
 
 # nema1.7 stepper 1:1 gear ratio ( a - c - b - d)
+
+(b - a1, g -b1, y - a2, r - 2b)
 
 minimun step = 2
 
