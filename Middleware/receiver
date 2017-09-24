@@ -1,0 +1,45 @@
+from Tkinter import *
+import serial
+from multiprocessing import Process
+import time
+
+ard = serial.Serial('COM3', 19200)
+tagword = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz']
+resultpt = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+accel = [0, 0, 0]
+gyro = [0, 0, 0]
+magnet = [0, 0, 0]
+
+
+def gy91():
+    while True:
+        count = 0
+        time.sleep(0.5)
+        msg = ''
+        msg = ard.read(ard.inWaiting())
+        if msg <> '':
+            try:
+                for i in tagword:
+                    if msg.index(i):
+                        resultpt[count] = msg.index(i)
+                        count += 1
+            except:
+                count = 0
+                print 'no word'
+                pass
+            print resultpt
+            if count == 9:
+                count = 0
+                ptax = [resultpt[0], (resultpt[1] - 1)]
+                print 'ax value'
+                print msg[ptax[0]: ptax[1]]
+                print ptax
+                print 'accel'
+                print accel
+                print 'gyro'
+                print gyro
+                print 'magnet'
+                print magnet
+
+
+gy91()
