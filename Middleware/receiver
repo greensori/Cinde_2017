@@ -1,12 +1,11 @@
 from Tkinter import *
 import serial
-from multiprocessing import Process
 import time
 
 ard = serial.Serial('COM3', 19200)
 tagword = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz', 'end']
-resultpt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-agm = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+resultpt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  ## to find tagword position
+agm = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] ##  sensor values savings on here
 
 def gy91():
     while True:
