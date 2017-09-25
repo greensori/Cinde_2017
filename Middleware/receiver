@@ -1,39 +1,78 @@
 from Tkinter import *
-import serial
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
 import time
+from PIL import ImageGrab
+import serial
 
-ard = serial.Serial('COM3', 19200)
+
 tagword = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz', 'end']
 resultpt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  ## to find tagword position
-agm = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] ##  sensor values savings on here
+agm = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] ## sensor values savings on here
 
-def gy91():
+size = [300, 300, 500, 500]
+linesize = [50, 100, 150, 100]
+
+
+class OSD:
+    def __init__ (self, port, baudrate):
+        self.ard = serial.Serial(port, baudrate)
+
+class preOSD:
+    def __init__(self):
+        global linesize
+    def going(self):
+        while True:
+            screen = np.array(ImageGrab.grab(bbox = size))
+            screen = cv2.cvtColor(screen, cv2.COLOR_BGR2GRAY)
+            accelpt(0, 1)
+            cv2.line(screen, (linesize[0], linesize[1]), (linesize[2], linesize[3]), (125, 0, 0), 1)
+            cv2.imshow('title', screen)
+            if cv2.waitKey(25) & 0xFF == ord('q'):
+                cv2.destroyAllWindows()
+                break
+    def accelometer(self, x, y):
+        if x <> 0:
+            linesize[0] -= x
+            linesize[2] += x
+        if y <> 0 and linesize[1] < 150 and linesize > 150:
+            linesize[1] -= y
+            linesize[3] += y
+  
+def going():
     while True:
-        count = 0
-        time.sleep(0.5)
-        msg = ''
-        msg = ard.read(ard.inWaiting())
-        print msg
-        if msg <> '':
-            try:
-                for i in tagword:
-                    if msg.index(i):
-                        resultpt[count] = msg.index(i)
-                        count += 1
-            except:
-                count = 0
-                print 'no word'
-                pass
-            if count == 10:
-                for i in range(count - 1):
-                    pos = [resultpt[i] + 3, (resultpt[(i+1)] - 1)]
-                    agm[i] = msg[pos[0]: pos[1]]
-            count = 0
-            print 'sensor value'
-            print agm
+        screen = np.array(ImageGrab.grab(bbox = size))
+        screen = cv2.cvtColor(screen, cv2.COLOR_BGR2GRAY)
+        accelometer(3, 0, 0)
+        cv2.line(screen, (linesize[0], linesize[1]), (linesize[2], linesize[3]), (125, 0, 0), 1)
+        cv2.imshow('title', screen)
+        if cv2.waitKey(25) & 0xFF == ord('q'):
+            cv2.destroyAllWindows()
+            break
 
-# dof10 value is not 0 then getting more indata
-## at the next indtata cutting msg before dof10
-## and make new msg starting 10dof
+def accelometer(x, y, z):
+    if x <> 0:
+        for i in range(x):
+            if linesize[0] <= 50 and linesize[1] < 150 and linesize[1] >= 50:
+                linesize[1] += 1
+                linesize[3] -= 1
+            elif linesize[1] >= 150 and linesize[0] < 150 and linesize[0] >= 50:
+                linesize[0] += 1
+                linesize[2] -= 1
+            elif linesize[0] >= 150 and linesize[1] <= 150 and linesize[1] > 50:
+                linesize[1] -= 1
+                linesize[3] += 1
+            elif linesize[1] <= 50 and linesize[0] <= 150 and linesize[0] > 50:
+                linesize[0] -= 1
+                linesize[2] += 1            
+                print linesize
+                
+def gyroscope():
+    return
 
-gy91()
+def magneticfield():
+    return
+
+            
+going()
