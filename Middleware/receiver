@@ -9,10 +9,14 @@ import serial
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
+ard = serial.Serial('COM3', 19200)
 tagword = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz', 'end']
-resultpt = np.zeros((10,), dtype = np.int)  ## to find tagword position
+resultpt =  np.zeros((10,), dtype = np.int)
 agm = np.zeros((9,), dtype = np.int) ## sensor values savings on here
-agm_mean = np.zeros((9, 50), dtype = np.int)
+agm_mean = np.zeros((50, 9), dtype = np.int)
+agm_ax = np.zeros((50,), dtype = np.int)
+agm_ay = np.zeros((50,), dtype = np.int)
+agm_az = np.zeros((50,), dtype = np.int)
 
 size = [300, 300, 500, 500]
 axline = [50, 100, 150, 100]
@@ -27,12 +31,6 @@ ayinfo = [tempint, (ayline[0] - 10), int(np.mean(ayline[3] - ayline[1]))]
 azinfo = [tempint, int(np.mean(azline[2] - azline[0])), (azline[1] - 10)]
 gyroinfo = [100, 100, 50]
 
-
-agm_ax = np.zeros((50,), dtype = np.int)
-agm_ay = np.zeros((50,), dtype = np.int)
-agm_az = np.zeros((50,), dtype = np.int)
-
-meancount = 0
 
 def gy91():
     global meancount
