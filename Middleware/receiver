@@ -12,7 +12,13 @@ resultpt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  ## to find tagword position
 agm = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] ## sensor values savings on here
 
 size = [300, 300, 500, 500]
-linesize = [50, 100, 150, 100]
+axline = [50, 100, 150, 100]
+ayline = [25, 50, 25, 150]
+azline = [50, 25, 150, 25]
+
+tempint = 10
+ayinfo = [tempint, (ayline[0] - 10), int(np.mean(ayline[3] - ayline[1]))]
+azinfo = [tempint, int(np.mean(azline[2] - azline[0])), (azline[1] - 10)]
 
 
 class OSD:
@@ -41,11 +47,18 @@ class preOSD:
             linesize[3] += y
   
 def going():
+    font = cv2.FONT_HERSHEY_SIMPLEX
     while True:
         screen = np.array(ImageGrab.grab(bbox = size))
         screen = cv2.cvtColor(screen, cv2.COLOR_BGR2GRAY)
-        accelometer(3, 0, 0)
-        cv2.line(screen, (linesize[0], linesize[1]), (linesize[2], linesize[3]), (125, 0, 0), 1)
+        accelometer(3, 1, -1)
+        cv2.line(screen, (axline[0], axline[1]), (axline[2], axline[3]), (125, 0, 0), 2)
+        cv2.line(screen, (ayline[0], ayline[1]), (ayline[2], ayline[3]), (125, 0, 0), 2)
+        cv2.line(screen, (azline[0], azline[1]), (azline[2], azline[3]), (125, 0, 0), 2)
+        cv2.line(screen, ((ayline[0] - 5), ayline[1]), ((ayline[0]), ayline[1]), (125, 0, 0), 2)
+        cv2.line(screen, ((ayline[0] - 5), ayline[3]), ((ayline[0]), ayline[3]), (125, 0, 0), 2)
+        cv2.putText(screen, '[ %s ]' %ayinfo[0], (ayinfo[1], ayinfo[2]), font, 0.6, (0, 0, 0), 1)
+        cv2.putText(screen, '[ %s ]' %azinfo[0], (azinfo[1], azinfo[2]), font, 0.6, (0, 0, 0), 1)
         cv2.imshow('title', screen)
         if cv2.waitKey(25) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
@@ -54,20 +67,24 @@ def going():
 def accelometer(x, y, z):
     if x <> 0:
         for i in range(x):
-            if linesize[0] <= 50 and linesize[1] < 150 and linesize[1] >= 50:
-                linesize[1] += 1
-                linesize[3] -= 1
-            elif linesize[1] >= 150 and linesize[0] < 150 and linesize[0] >= 50:
-                linesize[0] += 1
-                linesize[2] -= 1
-            elif linesize[0] >= 150 and linesize[1] <= 150 and linesize[1] > 50:
-                linesize[1] -= 1
-                linesize[3] += 1
-            elif linesize[1] <= 50 and linesize[0] <= 150 and linesize[0] > 50:
-                linesize[0] -= 1
-                linesize[2] += 1            
-                print linesize
-                
+            if axline[0] <= 50 and axline[1] < 150 and axline[1] >= 50:
+                axline[1] += 1
+                axline[3] -= 1
+            elif axline[1] >= 150 and axline[0] < 150 and axline[0] >= 50:
+                axline[0] += 1
+                axline[2] -= 1
+            elif axline[0] >= 150 and axline[1] <= 150 and axline[1] > 50:
+                axline[1] -= 1
+                axline[3] += 1
+            elif axline[1] <= 50 and axline[0] <= 150 and axline[0] > 50:
+                axline[0] -= 1
+                axline[2] += 1            
+    if y <> 0:
+        ayinfo[0] += y
+    if z <> 0:
+        azinfo[0] += z
+
+                    
 def gyroscope():
     return
 
