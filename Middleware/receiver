@@ -6,6 +6,7 @@ import time
 from PIL import ImageGrab
 import serial
 
+font = cv2.FONT_HERSHEY_SIMPLEX
 
 tagword = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz', 'end']
 resultpt = np.zeros((10,), dtype = np.int)  ## to find tagword position
@@ -28,7 +29,6 @@ gyroinfo = [100, 100, 50]
 
   
 def going():
-    font = cv2.FONT_HERSHEY_SIMPLEX
     while True:
         screen = np.array(ImageGrab.grab(bbox = size))
         accelometer(3, 1, -1)
