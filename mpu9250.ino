@@ -30,7 +30,7 @@ void loop() {
   delay(500);
   //accel, gyro, magnetic
     accelgyro.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
-    Serial.print("gy91:\t");
+    Serial.print("dof10:\t");
     Serial.print("ax_");Serial.print(ax); Serial.print(",");
     Serial.print("ay_");Serial.print(ay); Serial.print(",");
     Serial.print("az_");Serial.print(az); Serial.print(",");
