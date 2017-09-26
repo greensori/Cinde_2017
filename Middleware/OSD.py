@@ -73,7 +73,7 @@ def getaverage():
 
 def gy91():
     count = 0
-    time.sleep(0.5)
+    time.sleep(0.1)
     msg = ''
     msg = ard.read(ard.inWaiting())
     if msg <> '':
@@ -180,27 +180,15 @@ def gyroscope(x, y, z):
     for i in gyrocir:
         gyroinfo[count] = i
         count += 1
-    while x > 100 or x < -100:
-        if x > 100:
-            gyroinfo[0] += move
-            x = x - 100
-        elif x < -100:
-            gyroinfo[0] -= move
-            x = x + 100
-    while y > 100 or y < -100:
-        if y > 100:
-            gyroinfo[1] += move
-            y = y - 100
-        elif y < -100:
-            gyroinfo[1] -= move
-            y = y + 100
-    while z > 100 or z < -100:
-        if z > 100:
-            gyroinfo[2] += move
-            z = z - 100
-        elif z < -100:
-            gyroinfo[2] -= move
-            z = z + 100
+    if x > 100 or x < -100:
+        x = int(x * 0.01)
+        gyroinfo[0] += x
+    if y > 100 or y < -100:
+        y = int(y * 0.01)
+        gyroinfo[1] += y
+    if z > 100 or z < -100:
+        z = int(z * 0.01)
+        gyroinfo[2] += z
     if gyroinfo[2] <= 0:
         gyroinfo[2] = 1
 
