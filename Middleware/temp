@@ -12,3 +12,68 @@ void loop() {
   delay(2000);
 
 }
+
+#####
+#axline = [int(size[2] * 0.4), int(size[3] * 0.5), int(size[2] * 0.6), int(size[3] * 0.5)]
+def accelometer(x, y, z):
+    global axline
+    move = 1
+    ayinfo[0] = y
+    azinfo[0] = z
+    count = 0
+    for i in init_axline:
+        axline[count] = i
+        count += 1
+    while x > 100 or x < -100:
+        if x > 100:
+            if axline[0] <= 400 and axline[1] < 600 and axline[1] >= 400:
+                axline[1] += move
+                axline[3] -= move
+            elif axline[1] >= 600 and axline[0] < 600 and axline[0] >= 400:
+                axline[0] += move
+                axline[2] -= move
+            elif axline[0] >= 600 and axline[1] <= 600 and axline[1] > 400:
+                axline[1] -= move
+                axline[3] += move
+            elif axline[1] <= 400 and axline[0] <= 600 and axline[0] > 400:
+                axline[0] -= move
+                axline[2] += move
+            x = x - 100
+        elif x < -100:
+            if axline[0] <= 400 and axline[1] < 600 and axline[1] >= 400:
+                axline[1] -= move
+                axline[3] += move
+            elif axline[1] >= 600 and axline[0] < 600 and axline[0] >= 400:
+                axline[0] -= move
+                axline[2] += move
+            elif axline[0] >= 600 and axline[1] <= 600 and axline[1] > 400:
+                axline[1] += move
+                axline[3] -= move
+            elif axline[1] <= 400 and axline[0] <= 600 and axline[0] > 400:
+                axline[0] += move
+                axline[2] -= move
+            x = x + 100
+
+
+
+# maybe getting over 30000 value
+# must to find average values
+def gyroscope(x, y, z):
+    global gyroinfo
+    print ('input gyro %d, %d, %d' %(x, y, z))
+    move = 1
+    count = 0
+    for i in gyrocir:
+        gyroinfo[count] = i
+        count += 1
+    if x > 100 or x < -100:
+        x = int(x * 0.01)
+        gyroinfo[0] += x
+    if y > 100 or y < -100:
+        y = int(y * 0.01)
+        gyroinfo[1] += y
+    if z > 100 or z < -100:
+        z = int(z * 0.01)
+        gyroinfo[1] += z
+    if gyroinfo[2] <= 0:
+        gyroinfo[2] = 1
