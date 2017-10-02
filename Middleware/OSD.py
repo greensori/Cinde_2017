@@ -34,6 +34,7 @@ gyrocir = [int(size[2] * 0.5), int(size[3] * 0.5), int(size[3] * 0.2)]
 
 accelometer_init = [-1300, 200, 17000]
 
+#setting the initial values, getting 50times sensor value
 def getaverage():
     global meancount
     while meancount <= 49:
