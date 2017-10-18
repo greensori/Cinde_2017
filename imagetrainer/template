@@ -1,0 +1,53 @@
+import cv2
+import numpy as np
+from numpy import genfromtxt
+import matplotlib.pyplot as plt
+from PIL import ImageGrab
+import scipy.integrate as integrate
+
+
+font = cv2.FONT_HERSHEY_SIMPLEX
+
+def trainer():
+    keys = [i for i in range(48, 58)]
+    responses = []
+    count = 0
+    img = cv2.imread('ppcert.png')
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    #blur = cv2.GaussianBlur(gray,(5,5),0)
+    thresh = cv2.adaptiveThreshold(gray,255,1,1,11,2)
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    cntl = np.arange(1, len(contours) + 1)
+    cntl = cntl.reshape(len(contours), 1)
+    newline = np.zeros((len(contours), 1))
+    print cntl
+    print newline
+    for cnt in contours:
+        newline[count] = len(cnt)
+        count += 1
+        if len(cnt) > 20:
+            x,y,w,h = cv2.boundingRect(cnt)
+            cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+            cv2.putText(img, str(count), (x, y), font, 0.6, (0, 0, 0), 2)
+            roi = thresh[y:y+h,x:x+w]
+            roi = cv2.resize(roi, (20, 20))
+            cv2.imwrite('p%d.png' %count, roi)    
+    cntl = np.concatenate((cntl, newline), axis = 1)
+    plotting(cntl)
+    count += 1
+    cv2.imwrite('p%d.png' %count, img)  
+    print ('complete')
+    return
+
+def plotting(cntl):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.scatter(cntl[:, 0], cntl[:, 1],  5, 'b', 'o')
+    plt.show()
+    return
+
+def knearest():
+    return
+
+
+trainer()
