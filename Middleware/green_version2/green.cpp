@@ -29,6 +29,7 @@ int green::setting(int setvalue) {
   } else if ( setvalue == 4) {
     digitalWrite(_ENA, HIGH);
     digitalWrite(_STEP, LOW);
+    _pulse = 1200;
     return setvalue;
   }
 }
