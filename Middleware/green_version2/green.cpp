@@ -33,7 +33,7 @@ int green::setting(int setvalue) {
   }
 }
 
-void green::idle(int Accel) {
+void green::procWork(int Accel) {
   if (_pulse >= limit) {
     _pulse = (_pulse - Accel);
   } else {
@@ -42,6 +42,20 @@ void green::idle(int Accel) {
   delayMicroseconds (_pulse);
   digitalWrite(_STEP, LOW);
   digitalWrite(_STEP, HIGH);
+}
+
+void green::idle(int Accel, int peri) {
+  Serial.println ("idle work");
+  for (_i = 1; _i <= peri; _i++) {
+    if (_pulse >= limit) {
+      _pulse = (_pulse - Accel);
+    } else {
+      _pulse = limit;
+    }
+    delayMicroseconds (_pulse);
+    digitalWrite(_STEP, LOW);
+    digitalWrite(_STEP, HIGH);
+  }
 }
 
 int green::asciino(char c1, int digit) {
