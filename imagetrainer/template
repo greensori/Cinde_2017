@@ -1,53 +1,93 @@
-import cv2
-import numpy as np
-from numpy import genfromtxt
-import matplotlib.pyplot as plt
-from PIL import ImageGrab
-import scipy.integrate as integrate
+def keydown(e):
+    print (e.char)
+    print (Entry1.get())
+    return
 
-
-font = cv2.FONT_HERSHEY_SIMPLEX
-
-def trainer():
-    keys = [i for i in range(48, 58)]
-    responses = []
+def learn_button():
+    #global samples
+    #global responses
+    traindata = np.loadtxt('trained.data')
+    responses = np.loadtxt('responses.data')
     count = 0
-    img = cv2.imread('ppcert.png')
-    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    #blur = cv2.GaussianBlur(gray,(5,5),0)
-    thresh = cv2.adaptiveThreshold(gray,255,1,1,11,2)
-    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    cntl = np.arange(1, len(contours) + 1)
-    cntl = cntl.reshape(len(contours), 1)
-    newline = np.zeros((len(contours), 1))
-    print cntl
-    print newline
+    screen = np.array(ImageGrab.grab(bbox = size))
+    gray = cv2.cvtColor(screen,cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray,(5,5),0)
+    #gray = cv2.adaptiveThreshold(gray,255,1,1,11,2)
+    blur = cv2.adaptiveThreshold(blur,255,1,1,11,2)
+    contours, hierarchy = cv2.findContours(blur, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
-        newline[count] = len(cnt)
         count += 1
         if len(cnt) > 20:
-            x,y,w,h = cv2.boundingRect(cnt)
-            cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
-            cv2.putText(img, str(count), (x, y), font, 0.6, (0, 0, 0), 2)
-            roi = thresh[y:y+h,x:x+w]
-            roi = cv2.resize(roi, (20, 20))
-            cv2.imwrite('p%d.png' %count, roi)    
-    cntl = np.concatenate((cntl, newline), axis = 1)
-    plotting(cntl)
-    count += 1
-    cv2.imwrite('p%d.png' %count, img)  
-    print ('complete')
+            x,y,h,w = cv2.boundingRect(cnt)
+            cv2.rectangle(screen,(x,y),(x+w,y+h),(0,255,0),2)                   
+            cv2.putText(screen, str(count), (x, y), font, 0.3, (0, 0, 0), 1)
+    if (Entry1.get()):
+        dd = int(Entry1.get())
+        cnt = contours[dd]
+    else:
+        cnt = contours[1]
+    x,y,h,w = cv2.boundingRect(cnt)
+    roi = blur[y:y+h, x:x+w]
+    if (Entry2.get()):
+        print len(cnt)
+        roismall = cv2.resize(roi, (80, 80))
+        sample = roismall.reshape((1, 6400))
+        samples = np.append(samples, sample, 0)
+        responses.append(int(Entry2.get()))
+        cv2.imshow('imgroi', roi)
+        np.savetxt('trained.data', samples)
+        np.savetxt('responses.data', responses)
+    cv2.imshow('blurred', blur)
+    cv2.imshow('grayed', screen)
+    cv2.imshow('roied', roi)
+    #cv2.imwrite('presultroi.png', roi)
+    if cv2.waitKey(25) & 0xFF == ord('q'):
+        cv2.destroyAllWindows()
+        
+
+def find_button():
+    traindata = np.loadtxt('trained.data')
+    responses = np.loadtxt('responses.data')
+    responses = responses.reshape((len(responses), 1))
+    traindata = np.float32(traindata)
+    responses = np.float32(responses)
+    print traindata
+    print responses
+    knn = cv2.KNearest()
+    knn.train(traindata, responses)
+    screen = np.array(ImageGrab.grab(bbox = size))
+    gray = cv2.cvtColor(screen,cv2.COLOR_BGR2GRAY)
+    blur = cv2.GaussianBlur(gray,(5,5),0)
+    blur = cv2.adaptiveThreshold(blur,255,1,1,11,2)
+    contours, hierarchy = cv2.findContours(blur, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in contours:
+        if len(cnt > 20):
+            x,y,h,w = cv2.boundingRect(cnt)
+            roi = blur[y:y+h, x:x+w]
+            roismall = cv2.resize(roi, (80, 80))
+            newdata = roismall.reshape((1, 6400))
+            newdata = np.float32(newdata)
+            ret, results, neighbours, dist = knn.find_nearest(newdata, 1)
+            print 'dist'
+            print dist
+            print 'result'
+            print results
+            print 'neighbours'
+            print neighbours
     return
 
-def plotting(cntl):
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.scatter(cntl[:, 0], cntl[:, 1],  5, 'b', 'o')
-    plt.show()
-    return
 
-def knearest():
-    return
-
-
-trainer()
+App = Tk()
+frame = Frame(App, width = 22, height = 100)
+Entry1 = Entry(frame, width = 20)
+Entry1.grid(row = 0, column = 0)
+Entry2 = Entry(frame, width = 20)
+Entry2.grid(row = 1, column = 0)
+Button1 = Button(frame, text = 'learn', width = 10, command = learn_button)
+Button1.grid(row = 2, column = 0)
+Button2 = Button(frame, text = 'find', width = 10, command = find_button)
+Button2.grid(row = 3, column = 0)
+frame.bind("<KeyPress>", keydown)
+frame.pack()
+frame.focus_set()
+App.mainloop()
