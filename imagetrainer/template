@@ -44,7 +44,6 @@ def learn_button():
     if cv2.waitKey(25) & 0xFF == ord('q'):
         cv2.destroyAllWindows()
         
-
 def find_button():
     traindata = np.loadtxt('trained.data')
     responses = np.loadtxt('responses.data')
@@ -68,12 +67,13 @@ def find_button():
             newdata = roismall.reshape((1, 6400))
             newdata = np.float32(newdata)
             ret, results, neighbours, dist = knn.find_nearest(newdata, 1)
-            print 'dist'
-            print dist
-            print 'result'
-            print results
-            print 'neighbours'
-            print neighbours
+            if (dist <= 10):
+                print 'dist'
+                print dist
+                print 'result'
+                print results
+                print 'neighbours'
+                print neighbours
     return
 
 
