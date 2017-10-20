@@ -1,3 +1,11 @@
+import cv2
+import numpy as np
+from numpy import genfromtxt
+import matplotlib.pyplot as plt
+from PIL import ImageGrab, Image, ImageTk
+import scipy.integrate as integrate
+from Tkinter import *
+
 def keydown(e):
     print (e.char)
     print (Entry1.get())
