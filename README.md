@@ -32,6 +32,10 @@ idle pulse = under 4000 microsecond
 speed range = 470 to unlimited
 
 
+# MG995 servo ( orange - analog, red - 5v, black - ground)
+
+operation voltage : 3.5- 8.4
+
 // 0 ~ 9 setting acc value
 
 
