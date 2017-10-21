@@ -32,7 +32,7 @@ idle pulse = under 4000 microsecond
 speed range = 470 to unlimited
 
 
-# MG995 servo ( orange - analog, red - 5v, black - ground)
+# MG995 servo ( orange - analog, red - 5v, brown - ground)
 
 operation voltage : 3.5- 8.4
 
