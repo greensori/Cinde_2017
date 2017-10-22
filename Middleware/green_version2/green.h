@@ -7,7 +7,7 @@ class green
 {
   private:
     int _digitsum;
-    int _pulse;
+    int _pwm;
     int _ENA;
     int _DIR;
     int _STEP;
@@ -20,7 +20,6 @@ class green
     void procWork(int Accel);
     void idle(int Accel, int peri);
     int asciino(char c1, int digit);
-    int chconverter(char ch);
 };
 
 #endif
