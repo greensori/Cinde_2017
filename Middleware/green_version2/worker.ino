@@ -1,7 +1,7 @@
 #include "green.h"
 
-green stepper1(13, 11, 12, 4000);
-green stepper2(4, 5, 6, 1100);
+green stepper1(4000, 13, 11, 12);
+green stepper2(1100, 4, 5, 6);
 
 #define dirmaker 34
 #define periodmaker 64
@@ -26,6 +26,16 @@ void loop() {
   if (Serial.available()) {
     if (count == 4) {count = stepper1.setting(3);}
     ch = Serial.read();
+    working();
+  } else {
+    if (count != 4) {
+      count = stepper1.setting(4); //operation end
+    }
+  }
+}
+
+
+void working() {
     if (ch == 35 || ch == 36) {
       result_dir = (ch - dirmaker);
       stepper1.setting(result_dir);
@@ -34,14 +44,21 @@ void loop() {
       stepper1.procWork(accel); 
       count = stepper1.asciino(ch, count);
     } else if (ch >=43 && ch <= 45) {
-      
+      if (ch == 43) {
+        stepper1.idle(accel, 2);
+        accel ++;
+      } else if (ch == 44) {
+        stepper1.idle(accel, 2);
+        accel = 0;
+      } else if (ch == 45) {
+        stepper1.idle(accel, 2);
+        accel --;
+      }
     } else if (ch == 65) {
       stepper1.idle(accel, 2);
+    } else if (ch == 66) {
+      stepper1.idle(accel, 20);
+    } else if (ch == 67) {
+      stepper1.idle(Accel, 200);
     }
-  } else {
-    if (count != 4) {
-      count = stepper1.setting(4); //operation end
-    }
-  }
 }
-
