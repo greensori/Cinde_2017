@@ -5,9 +5,9 @@
 
 #define intmaker 48
 
-green::green(int EnaNo, int DirNo, int StepNo, int pulse)
+green::green(int pulse, int EnaNo, int DirNo, int StepNo)
 {
-   _pulse = pulse;
+   _pwm = pulse;
   _ENA = EnaNo;
   _DIR = DirNo;
   _STEP = StepNo;
@@ -34,26 +34,27 @@ int green::setting(int setvalue) {
   }
 }
 
+//this working when status changing
 void green::procWork(int Accel) {
-  if (_pulse >= limit) {
-    _pulse = (_pulse - Accel);
+  if (_pwm >= limit) {
+    _pwm = (_pwm - Accel);
   } else {
-    _pulse = limit;
+    _pwm = limit;
   }
-  delayMicroseconds (_pulse);
+  delayMicroseconds (_pwm);
   digitalWrite(_STEP, LOW);
   digitalWrite(_STEP, HIGH);
 }
 
+//this is working when idle states
 void green::idle(int Accel, int peri) {
-  Serial.println ("idle work");
   for (_i = 1; _i <= peri; _i++) {
-    if (_pulse >= limit) {
-      _pulse = (_pulse - Accel);
+    if (_pwm >= limit) {
+      _pwm = (_pulse - Accel);
     } else {
-      _pulse = limit;
+      _pwm = limit;
     }
-    delayMicroseconds (_pulse);
+    delayMicroseconds (_pwm);
     digitalWrite(_STEP, LOW);
     digitalWrite(_STEP, HIGH);
   }
