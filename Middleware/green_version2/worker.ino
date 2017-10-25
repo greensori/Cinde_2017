@@ -1,7 +1,7 @@
 #include "green.h"
 
-green stepper1(4000, 13, 11, 12);
-green stepper2(1100, 4, 5, 6);
+
+green stepper1(4000, 13, 11, 12, 10, 1);
 
 #define dirmaker 34
 #define periodmaker 64
@@ -31,6 +31,7 @@ void loop() {
     if (count != 4) {
       count = stepper1.setting(4); //operation end
     }
+    stepper1.elseidle();
   }
 }
 
@@ -59,6 +60,6 @@ void working() {
     } else if (ch == 66) {
       stepper1.idle(accel, 20);
     } else if (ch == 67) {
-      stepper1.idle(Accel, 200);
+      stepper1.idle(accel, 200);
     }
 }
