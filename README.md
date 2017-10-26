@@ -34,6 +34,10 @@ speed range = 470 to unlimited
 
 # MG995 servo ( orange - analog, red - 5v, brown - ground)
 
+working every 20mili seconds
+
+working between 900 micros (0 deg) and 2100 micros (180 deg) 
+
 operation voltage : 3.5- 8.4
 
 // 0 ~ 9 setting acc value
