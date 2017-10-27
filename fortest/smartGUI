@@ -1,0 +1,65 @@
+from Tkinter import *
+import serial
+import time
+
+portno = []
+portlist = ['notin']
+for i in range(1, 9):
+    portlist.append('port%d' %i)
+
+def serialconnection():
+    global portlist
+    for i in range(1, 9):
+        try:
+            portlist[i] = serial.Serial('COM%d' %i, 115200)
+            portno.append(i)
+            print ('connected port %d' %i)
+        except:
+            print ('cant conect com%d' %i)
+
+def serialread():
+    count = 0
+    while count < 5:
+        time.sleep(0.1)
+        count += 1
+        msg = portlist[6].readline(portlist[6].inWaiting()) [:-2]
+        print (msg) 
+
+def openfn2():
+    return
+
+class guimaker:
+    def __init__(self):
+        App = Tk()
+        App.title('smartGUI')
+        App.resizable(width = True, height = True)
+        msg = str('hello')
+        self.label1 = Label(App, text = msg)
+        self.label1.pack()
+        ##start to making menu
+        topmenu = Menu(App)
+        filemenu = Menu(topmenu, tearoff = 0)
+        filemenu.add_command(label = 'connect', command = serialconnection)
+        filemenu.add_command(label = 'testmsg2', command = openfn2)
+        filemenu.add_command(label = 'testmsg3', command = self.labelchanger)
+        filemenu.add_separator()
+        filemenu.add_command(label = 'close', command = App.destroy)
+        topmenu.add_cascade(label = 'port', menu = filemenu)
+        editmenu = Menu(topmenu, tearoff = 0)
+        editmenu.add_command(label = 'testmsg3', command = serialread)
+        topmenu.add_cascade(label = 'running', menu = editmenu)
+        App.config(menu = topmenu)
+        canvas = Canvas(App, width = 300, height = 300)
+        canvas.pack()
+        App.mainloop()
+    def labelchanger (self):
+        label1 = self.label1
+        label1.configure(text = time.time())
+        print ('changed')
+       
+
+
+
+
+if __name__ == '__main__':
+    start = guimaker()
