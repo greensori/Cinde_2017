@@ -1,0 +1,153 @@
+from Tkinter import *
+import serial
+import time
+
+tkpos = []
+
+portno = []
+portlist = ['notin']
+portgroup = ['notin']
+portentry = ['notin']
+portlabel = ['notin']
+temprow = 0
+tempcol = 0
+for i in range(1, 9):
+    portlist.append('port%d' %i)
+    portentry.append('P_entry%d' %i)
+    portlabel.append('P_label%d' %i)
+    portgroup.append('P_grouop%d' %i)
+    
+def serialconnection():
+    global portlist
+    for i in range(1, 9):
+        try:
+            baudrate = portentry[i].get()
+            portlist[i] = serial.Serial('COM%d' %i, baudrate)
+            portno.append(i)
+            portlabel[i].config(text = 'connected') 
+            print ('connected port %d' %i)
+        except:
+            portlabel[i].config(text = 'disconnected')
+            print ('cant conect com%d' %i)
+
+def serialread():
+    count = 0
+    while count < 5:
+        time.sleep(0.1)
+        count += 1
+        msg = portlist[6].readline(portlist[6].inWaiting()) [:-2]
+        print (msg) 
+
+def openfn2():
+    try:
+        portlabel[1].config(text = 'ok') 
+        print ('changed')
+    except:
+        pass
+    return
+
+    
+def openfn3(label1):
+    label1.configure(text = time.time())
+    app.after(1000, openfn(label1))
+    app.config()
+    print ('changed')
+    return
+
+def labelchanger():
+    label1.configure(text = time.time()) 
+    App.after(1000, labelchanger)
+    print ('changed')       
+
+def main_move(event):
+    if tkpos:
+        connect.geometry('+{0}+{1}'.format(tkpos[0], tkpos[1]))
+
+def sub_move(event):
+    min_w = App.winfo_rootx()
+    min_h = App.winfo_rooty()
+    max_w = App.winfo_rootx() + App.winfo_width() - 15
+    max_h = App.winfo_rooty() + App.winfo_height() - 35
+    # Conditional statements to keep sub window inside main
+    if event.x < min_w:
+        connect.geometry("+{0}+{1}".format(min_w, event.y))
+    elif event.y < min_h:
+        connect.geometry("+{0}+{1}".format(event.x, min_h))
+    elif event.x + event.width > max_w:
+        connect.geometry("+{0}+{1}".format(max_w - event.width, event.y))
+    elif event.y + event.height > max_h:
+        connect.geometry("+{0}+{1}".format(event.x, max_h - event.height))
+    global tkpos
+    # Set the current sub window position
+    tkpos = [event.x, event.y]  
+    return
+
+
+
+App = Tk()
+App.title('smartGUI')
+App.resizable(width = False, height = False)
+App.geometry('800x550+1000+500')
+msg = str('hello')
+label1 = Label(App, text = msg)
+label1.pack()
+##start to making menu
+topmenu = Menu(App)
+filemenu = Menu(topmenu, tearoff = 0)
+filemenu.add_command(label = 'connect', command = serialconnection)
+filemenu.add_command(label = 'testmsg2', command = openfn2)
+filemenu.add_command(label = 'testmsg3', command = openfn2)
+filemenu.add_separator()
+filemenu.add_command(label = 'close', command = App.destroy)
+topmenu.add_cascade(label = 'port', menu = filemenu)
+editmenu = Menu(topmenu, tearoff = 0)
+editmenu.add_command(label = 'testmsg3', command = serialread)
+topmenu.add_cascade(label = 'running', menu = editmenu)
+App.config(menu = topmenu)
+##complete making menubar // start setting label
+canvas = Canvas(App, width = 300, height = 300)
+canvas.pack()
+##add toplevel(connection)
+connect = Toplevel(App)
+connect.title("connection setting")
+connect.geometry('225x320+1050+550')
+connect.resizable(width=False, height = False)
+connect.transient(App)
+for i in range(1, 9):
+    if i % 2 == 0:
+        portgroup[i] = LabelFrame(connect, text = 'port%d' %i, padx = 5, pady = 5)
+        portgroup[i].grid(row = (i - 1), column = 1, padx = 5, pady = 5)
+        portentry[i] = Entry(portgroup[i], width = 12)
+        portentry[i].pack()
+        portentry[i].insert(0, '115200')
+        portlabel[i] = Label(portgroup[i], text = 'ready')
+        portlabel[i].pack()
+    else:
+        portgroup[i] = LabelFrame(connect, text = 'port%d' %i, padx = 5, pady = 5)
+        portgroup[i].grid(row = (i), column = 0, padx = 5, pady = 5)
+        portentry[i] = Entry(portgroup[i], width = 12)
+        portentry[i].pack()
+        portentry[i].insert(0, '115200')
+        portlabel[i] = Label(portgroup[i], text = 'ready')
+        portlabel[i].pack()
+##end setting connection part
+##add toplevel to control sample board
+testboard = Toplevel(App)
+testboard.title("tester")
+testboard.geometry('200x100+1050+550')
+testboard.resizable(width=False, height = False)
+testboard.transient(App)
+scale1 = Spinbox(testboard, from_ = 0, to = 100)
+scale1.pack()
+App.bind('<Configure>', main_move)
+connect.bind('<Configure>',sub_move)
+App.after(1, labelchanger)
+
+
+
+def start():
+    App.mainloop()
+    return
+
+if __name__ == '__main__':
+    start()
