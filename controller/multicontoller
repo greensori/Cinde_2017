@@ -5,17 +5,25 @@ import time
 tkpos = []
 
 portno = []
-portlist = ['notin']
-portgroup = ['notin']
-portentry = ['notin']
-portlabel = ['notin']
+portlist = ['portlist']
+portgroup = ['connect']
+portentry = ['connect']
+portlabel = ['connect']
+TBlabel = ['testboard']
+TBlaelname = ['notin', 'portNo : ', 'Accelation : ', 'PWM : ', 'Times : '] 
 temprow = 0
 tempcol = 0
+#for using port status
 for i in range(1, 9):
     portlist.append('port%d' %i)
     portentry.append('P_entry%d' %i)
     portlabel.append('P_label%d' %i)
     portgroup.append('P_grouop%d' %i)
+
+#for using in testboarder
+for i in range(1, 5):
+    TBlabel.append('TBlabel%d' %i)
+    
     
 def serialconnection():
     global portlist
@@ -132,13 +140,25 @@ for i in range(1, 9):
         portlabel[i].pack()
 ##end setting connection part
 ##add toplevel to control sample board
-testboard = Toplevel(App)
-testboard.title("tester")
-testboard.geometry('200x100+1050+550')
-testboard.resizable(width=False, height = False)
-testboard.transient(App)
-scale1 = Spinbox(testboard, from_ = 0, to = 100)
-scale1.pack()
+tester = Toplevel(App)
+tester.title("tester")
+tester.geometry('150x100+1050+550')
+tester.resizable(width=False, height = False)
+tester.transient(App)
+for i in range(1, 5):
+    TBlabel[i] = Label(tester, text = TBlaelname[i])
+    TBlabel[i].grid(row = i, column = 0)
+
+'''
+T1label = Label(tester, text = ' portNo : ')
+T1label.grid(row = 0, column = 0)
+T1scale = Spinbox(tester, from_ = 0, to = 100, width = 6)
+T1scale.grid(row = 0, column = 1)
+T2label = Label(tester, text = ' Accelation : ')
+T2label = grid(row = 1, column = 0)
+T2scale = Spinbox(tester, from_ = 0, to = 100, width = 6)
+T2scale.grid(row = 0, column = 1)
+'''
 App.bind('<Configure>', main_move)
 connect.bind('<Configure>',sub_move)
 App.after(1, labelchanger)
