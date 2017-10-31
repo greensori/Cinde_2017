@@ -10,9 +10,11 @@ portgroup = ['connect']
 portentry = ['connect']
 portlabel = ['connect']
 TBlabel = ['testboard']
-TBlaelname = ['notin', 'portNo : ', 'Accelation : ', 'PWM : ', 'Times : '] 
+TBlabelname = ['notin', 'portNo : ', 'Accelation : ', 'PWM : ', 'Times : '] 
 temprow = 0
 tempcol = 0
+PDA = 0
+
 #for using port status
 for i in range(1, 9):
     portlist.append('port%d' %i)
@@ -44,7 +46,35 @@ def serialread():
         time.sleep(0.1)
         count += 1
         msg = portlist[6].readline(portlist[6].inWaiting()) [:-2]
-        print (msg) 
+        print (msg)
+        
+
+def Breader():
+    global PDA
+    if (T1var.get() == 1):
+        if PDA == 0:
+            PDA = 1
+            portlist[int(T1scale.get())].write(str(T2scale.get()))
+            portlist[int(T1scale.get())].write(str(T3scale.get()))
+            print 'setting init'
+        elif PDA == 1:
+            portlist[int(T1scale.get())].write(str(T4scale.get()))
+            print 'idle working'
+    else:
+        PDA = 0
+        print ('initiate')           
+    App.after(100, Breader)
+    return
+
+def Bworker():
+    count = 0
+    stime = time.time()
+    print (T2scale.get(), T3scale.get(), T4scale.get())
+    while (time.time() - stime) < 0.1:
+        portlist[int(T1scale.get())].write(str(count))
+        count += 1
+    print (count)
+    return
 
 def openfn2():
     try:
@@ -52,15 +82,12 @@ def openfn2():
         print ('changed')
     except:
         pass
-    return
-
     
 def openfn3(label1):
     label1.configure(text = time.time())
     app.after(1000, openfn(label1))
     app.config()
     print ('changed')
-    return
 
 def labelchanger():
     label1.configure(text = time.time()) 
@@ -91,11 +118,12 @@ def sub_move(event):
     return
 
 
-
+##tkinter menu
 App = Tk()
 App.title('smartGUI')
 App.resizable(width = False, height = False)
 App.geometry('800x550+1000+500')
+T1var = IntVar()
 msg = str('hello')
 label1 = Label(App, text = msg)
 label1.pack()
@@ -142,27 +170,30 @@ for i in range(1, 9):
 ##add toplevel to control sample board
 tester = Toplevel(App)
 tester.title("tester")
-tester.geometry('150x100+1050+550')
+tester.geometry('150x165+1050+550')
 tester.resizable(width=False, height = False)
 tester.transient(App)
 for i in range(1, 5):
-    TBlabel[i] = Label(tester, text = TBlaelname[i])
-    TBlabel[i].grid(row = i, column = 0)
-
-'''
-T1label = Label(tester, text = ' portNo : ')
-T1label.grid(row = 0, column = 0)
-T1scale = Spinbox(tester, from_ = 0, to = 100, width = 6)
-T1scale.grid(row = 0, column = 1)
-T2label = Label(tester, text = ' Accelation : ')
-T2label = grid(row = 1, column = 0)
-T2scale = Spinbox(tester, from_ = 0, to = 100, width = 6)
-T2scale.grid(row = 0, column = 1)
-'''
+    TBlabel[i] = Label(tester, text = TBlabelname[i])
+    TBlabel[i].grid(row = i, column = 0, padx = 2, pady = 2)
+T1scale = Spinbox(tester, from_ = 1, to = 8, width = 6)
+T1scale.grid(row = 1, column = 1, padx = 2, pady = 2)
+T2scale = Spinbox(tester, from_ = -4, to = 4, width = 6)
+T2scale.grid(row = 2, column = 1, padx = 2, pady = 2)
+T3scale = Spinbox(tester, from_ = 570, to = 20000, width = 6)
+T3scale.grid(row = 3, column = 1, padx = 2, pady = 2)
+T4scale = Spinbox(tester, from_ = 0, to = 500, width = 6)
+T4scale.grid(row = 4, column = 1, padx = 2, pady = 2)
+T1check = Checkbutton(tester, text = 'autowrite', variable = T1var)
+T1check.grid(row = 5, column = 0, padx = 2, pady = 2)
+Button1 = Button(tester, text = 'Reader', width = 7, command = Breader)
+Button1.grid(row = 6, column = 0, padx = 2, pady = 2)
+Button2 = Button(tester, text = 'RUN', width = 7, command = Bworker)
+Button2.grid(row = 6, column = 1, padx = 2, pady = 2)
 App.bind('<Configure>', main_move)
 connect.bind('<Configure>',sub_move)
 App.after(1, labelchanger)
-
+App.after(1, Breader)
 
 
 def start():
