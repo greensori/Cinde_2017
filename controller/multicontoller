@@ -1,8 +1,11 @@
 from Tkinter import *
+from PIL import ImageGrab, Image, ImageTk
 import serial
 import time
 
 tkpos = []
+
+operationtime = 0
 
 portno = []
 portlist = ['portlist']
@@ -13,7 +16,7 @@ TBlabel = ['testboard']
 TBlabelname = ['notin', 'portNo : ', 'Accelation : ', 'PWM : ', 'Times : '] 
 temprow = 0
 tempcol = 0
-PDA = 0
+PDA = 0  
 
 #for using port status
 for i in range(1, 9):
@@ -43,27 +46,30 @@ def serialconnection():
 def serialread():
     count = 0
     while count < 5:
-        time.sleep(0.1)
+        time.sleep(0.01)
         count += 1
         msg = portlist[6].readline(portlist[6].inWaiting()) [:-2]
-        print (msg)
-        
+        print (msg)        
 
 def Breader():
+    delaytimer = 200
     global PDA
+    global operationtime
     if (T1var.get() == 1):
         if PDA == 0:
+            operationtime = time.time()
+            delaytimer = T4scale.get()
             PDA = 1
             portlist[int(T1scale.get())].write(str(T2scale.get()))
             portlist[int(T1scale.get())].write(str(T3scale.get()))
-            print 'setting init'
         elif PDA == 1:
+            delaytimer = T4scale.get()
             portlist[int(T1scale.get())].write(str(T4scale.get()))
-            print 'idle working'
     else:
         PDA = 0
-        print ('initiate')           
-    App.after(100, Breader)
+        delaytimer = 200
+    label3.configure(text =  (time.time() - operationtime))
+    App.after(delaytimer, Breader)
     return
 
 def Bworker():
@@ -84,7 +90,8 @@ def openfn2():
         pass
     
 def openfn3(label1):
-    label1.configure(text = time.time())
+    sstime = time.time()
+    label1.configure(text = (time.time() - sstime))
     app.after(1000, openfn(label1))
     app.config()
     print ('changed')
@@ -92,7 +99,6 @@ def openfn3(label1):
 def labelchanger():
     label1.configure(text = time.time()) 
     App.after(1000, labelchanger)
-    print ('changed')       
 
 def main_move(event):
     if tkpos:
@@ -118,6 +124,9 @@ def sub_move(event):
     return
 
 
+
+img = Image.open('img_title4.png')
+
 ##tkinter menu
 App = Tk()
 App.title('smartGUI')
@@ -125,8 +134,14 @@ App.resizable(width = False, height = False)
 App.geometry('800x550+1000+500')
 T1var = IntVar()
 msg = str('hello')
+photo = ImageTk.PhotoImage(img)
 label1 = Label(App, text = msg)
-label1.pack()
+label1.place(x = 10, y = 10)
+label2 = Label(App, image = photo)
+label2.image = photo
+label2.pack()
+label3 = Label(App, text = 'working time')
+label3.place( x = 10, y = 30)
 ##start to making menu
 topmenu = Menu(App)
 filemenu = Menu(topmenu, tearoff = 0)
@@ -155,7 +170,7 @@ for i in range(1, 9):
         portgroup[i].grid(row = (i - 1), column = 1, padx = 5, pady = 5)
         portentry[i] = Entry(portgroup[i], width = 12)
         portentry[i].pack()
-        portentry[i].insert(0, '115200')
+        portentry[i].insert(0, '19200')
         portlabel[i] = Label(portgroup[i], text = 'ready')
         portlabel[i].pack()
     else:
@@ -163,7 +178,7 @@ for i in range(1, 9):
         portgroup[i].grid(row = (i), column = 0, padx = 5, pady = 5)
         portentry[i] = Entry(portgroup[i], width = 12)
         portentry[i].pack()
-        portentry[i].insert(0, '115200')
+        portentry[i].insert(0, '19200')
         portlabel[i] = Label(portgroup[i], text = 'ready')
         portlabel[i].pack()
 ##end setting connection part
