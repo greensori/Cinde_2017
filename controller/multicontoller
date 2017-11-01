@@ -2,6 +2,9 @@ from Tkinter import *
 from PIL import ImageGrab, Image, ImageTk
 import serial
 import time
+import numpy as np
+
+resultGy = np.zeros((10,), dtype = np.int)
 
 tkpos = []
 
@@ -27,7 +30,7 @@ PDA = 0
 TBlabelname = ['notin', 'portNo : ', 'Accelation : ', 'PWM : ', 'Times : ']
 maintestername = ['notin', 'workon : ', 'steps : ', 'potentio : ']
 gyroScope = ['notin', 'yaw', 'pitch', 'roll', 'Ax', 'Ay', 'Az', 'Mx', 'My', 'Mz']
-
+tagword = ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz', 'end']
 
 ##gyroscopesetting
 for i in range(1, 10):
@@ -68,13 +71,35 @@ def serialconnection():
             portlabel[i].config(text = 'disconnected')
             print ('cant conect com%d' %i)
 
+
+##need to modify
 def serialread():
     count = 0
+    gycount = 0
     while count < 5:
         time.sleep(0.01)
         count += 1
         msg = portlist[6].readline(portlist[6].inWaiting()) [:-2]
-        print (msg)        
+        if msg <> '':
+            try:
+                for i in tagword:
+                    if msg.index(i):
+                        resultGy[gycount] = msg.index(i)
+                        gycount+= 1
+                        print (i, resultGy[gycount])
+            except:
+                gycount = 0
+                print ('noword')
+                '''
+            if count == 10:
+                try:
+                    for i in range(gycount - 1):
+                        pos = [resultpt[i] + 3, (resultpt[(i + 1)] - 1)]
+                        agm[i] = msg[pos[0]: pos[1]]
+                        agm_mean[meancount][i] = agm[i]
+                except:
+                    pass
+                '''
 
 def autowriter():
     delaytimer = 200
