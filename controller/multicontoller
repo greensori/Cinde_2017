@@ -6,6 +6,7 @@ import time
 tkpos = []
 
 operationtime = 0
+stepwork = 0
 
 portno = []
 portlist = ['portlist']
@@ -13,10 +14,35 @@ portgroup = ['connect']
 portentry = ['connect']
 portlabel = ['connect']
 TBlabel = ['testboard']
-TBlabelname = ['notin', 'portNo : ', 'Accelation : ', 'PWM : ', 'Times : '] 
+mainframe = ['main']
+maintester = ['main']
+gyroH1 = ['headRpt']
+gyroH2 = ['headLpt']
+gyroBr = ['BreastPt']
+gyroWa = ['waistPt']
 temprow = 0
 tempcol = 0
-PDA = 0  
+PDA = 0 
+
+TBlabelname = ['notin', 'portNo : ', 'Accelation : ', 'PWM : ', 'Times : ']
+maintestername = ['notin', 'workon : ', 'steps : ', 'potentio : ']
+gyroScope = ['notin', 'yaw', 'pitch', 'roll', 'Ax', 'Ay', 'Az', 'Mx', 'My', 'Mz']
+
+
+##gyroscopesetting
+for i in range(1, 10):
+    gyroH1.append('gyh1%d' %i)
+    gyroH2.append('gyh2%d' %i)
+    gyroBr.append('gybr%d' %i)
+    gyroWa.append('gywa%d' %i)
+    
+#mainframe setting
+for i in range(1, 10):
+    mainframe.append('mainF%d' %i)
+
+for i in range(1, 4):
+    maintester.append('mtester%d' %i)
+
 
 #for using port status
 for i in range(1, 9):
@@ -28,8 +54,7 @@ for i in range(1, 9):
 #for using in testboarder
 for i in range(1, 5):
     TBlabel.append('TBlabel%d' %i)
-    
-    
+
 def serialconnection():
     global portlist
     for i in range(1, 9):
@@ -51,8 +76,9 @@ def serialread():
         msg = portlist[6].readline(portlist[6].inWaiting()) [:-2]
         print (msg)        
 
-def Breader():
+def autowriter():
     delaytimer = 200
+    global stepwork
     global PDA
     global operationtime
     if (T1var.get() == 1):
@@ -60,16 +86,22 @@ def Breader():
             operationtime = time.time()
             delaytimer = T4scale.get()
             PDA = 1
+            stepwork = 1
             portlist[int(T1scale.get())].write(str(T2scale.get()))
             portlist[int(T1scale.get())].write(str(T3scale.get()))
         elif PDA == 1:
+            stepwork += 1
             delaytimer = T4scale.get()
             portlist[int(T1scale.get())].write(str(T4scale.get()))
     else:
         PDA = 0
         delaytimer = 200
-    label3.configure(text =  (time.time() - operationtime))
-    App.after(delaytimer, Breader)
+    maintester[1].configure(text = ('work on : %d' %(time.time() - operationtime)))
+    maintester[2].configure(text = ('steps : %d' %stepwork))
+    App.after(delaytimer, autowriter)
+    return
+
+def Breader():
     return
 
 def Bworker():
@@ -135,13 +167,21 @@ App.geometry('800x550+1000+500')
 T1var = IntVar()
 msg = str('hello')
 photo = ImageTk.PhotoImage(img)
-label1 = Label(App, text = msg)
-label1.place(x = 10, y = 10)
+##testerport
+'''
 label2 = Label(App, image = photo)
 label2.image = photo
 label2.pack()
-label3 = Label(App, text = 'working time')
-label3.place( x = 10, y = 30)
+label1 = Label(App, text = msg)
+label1.place(x = 10, y = 10)
+'''
+## add the tester status frame
+mainframe[1] = LabelFrame(App, text = 'tester', padx = 5, pady = 5)
+mainframe[1].grid(row = 0, column = 0, padx = 5, pady = 5)
+for i in range(1, 4):
+    maintester[i] = Label(mainframe[1], text = maintestername[i])
+    maintester[i].grid(row = (i - 1), column = 0)
+
 ##start to making menu
 topmenu = Menu(App)
 filemenu = Menu(topmenu, tearoff = 0)
@@ -156,8 +196,8 @@ editmenu.add_command(label = 'testmsg3', command = serialread)
 topmenu.add_cascade(label = 'running', menu = editmenu)
 App.config(menu = topmenu)
 ##complete making menubar // start setting label
-canvas = Canvas(App, width = 300, height = 300)
-canvas.pack()
+#canvas = Canvas(App, width = 300, height = 300)
+#canvas.pack()
 ##add toplevel(connection)
 connect = Toplevel(App)
 connect.title("connection setting")
@@ -207,8 +247,8 @@ Button2 = Button(tester, text = 'RUN', width = 7, command = Bworker)
 Button2.grid(row = 6, column = 1, padx = 2, pady = 2)
 App.bind('<Configure>', main_move)
 connect.bind('<Configure>',sub_move)
-App.after(1, labelchanger)
-App.after(1, Breader)
+#App.after(1, labelchanger)
+App.after(1, autowriter)
 
 
 def start():
