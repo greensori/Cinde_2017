@@ -27,6 +27,7 @@ temprow = 0
 tempcol = 0
 PDA = 0 
 
+bodypoint = ['Tester', 'shoulderjoint', 'R_hand', 'breast', 'R_ankle',  'R_cochlea', 'R_shoulder', 'R_wrist', 'R_pelvis', 'R_Knee', 'L_cochlea', 'L_shoulder', 'L_wrist', 'waist', 'L_knee', 'emotion', 'neck', 'L_hand', 'L_pelvis', 'L_ankle']
 TBlabelname = ['notin', 'portNo : ', 'Accelation : ', 'PWM : ', 'Times : ']
 maintestername = ['notin', 'workon : ', 'steps : ', 'potentio : ']
 gyroScope = ['notin', 'yaw', 'pitch', 'roll', 'Ax', 'Ay', 'Az', 'Mx', 'My', 'Mz']
