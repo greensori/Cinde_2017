@@ -1,8 +1,6 @@
 
 # green controller
 
-stepping motor control setting
-
 stepping setting table
 
 # nema1.7 stepper 3.7:1 gear ratio ( a - b- c- d)
