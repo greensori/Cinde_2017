@@ -3,6 +3,14 @@
 
 stepping setting table
 
+# asccii
+
+//43.44.45 = + , - , setting accelation
+//35.36 = # $ , setting direction 
+// A ~ = 65 ~
+// 1 ~ = 48 ~
+// a ~ = 97 ~
+
 # nema1.7 stepper 3.7:1 gear ratio ( a - b- c- d)
 
 minimun step = 2
