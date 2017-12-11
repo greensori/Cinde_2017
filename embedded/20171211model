@@ -1,0 +1,91 @@
+#include "cinde.h"
+
+#define sumstep 2
+
+#define setpwm (570 + (ch * 4)) //setting stepping values
+
+cinde mycinde(sumstep);
+
+const int ENA[sumstep] = {1, 4};
+const int STEP[sumstep] = {2, 5};
+const int DIR[sumstep] = {3, 6};
+
+const int potentionumber[sumstep] = {1, 2};
+
+int potentiostep = 0; //savings potentiometers value
+//int range = 32767
+
+int pwm[sumstep]; //temporaily using
+int initPwm[sumstep]; //storage inital pwm values
+int stepsetting[sumstep]; //storage status of stepper
+
+int pwmWorker; //working worh pwmworker
+
+int currentstep;
+
+char ch;
+
+int i; //using in for action
+
+
+void setup() {
+  Serial.begin(19200);
+}
+
+//1 ~ : 48 ~ stepper number
+
+//43.44.45 = + , - , setting accelation
+//35.36 = # $ , setting direction 
+//37 ~ 42 = setting stepping numbers
+// A ~ = 65 ~
+// a ~ = 97 ~
+void loop() {
+  if(Serial.available()) {
+    ch = Serial.read();
+    Serial.println (ch + 1);
+    if (ch >= 37 && ch <= 42) {
+      currentstep = (ch - 36);  //setting stepping number
+    } else if (ch >= 65 && ch <= 97) {
+      Serial.println ("speed");
+      Serial.println (setpwm);
+    } else if (ch == 35 && ch == 36) {
+      Serial.println ("direction");
+      pwm[currentstep] = 100;
+    } 
+  } else {
+    minPwm();
+  }
+}
+
+
+
+
+int settingstep() {
+    
+}
+
+void minPwm() {
+  pwmWorker = pwm[0];
+  for (i = 1; i < sumstep; i++) {
+    pwmWorker = min(pwm[i], pwmWorker);
+  }
+  while (pwmWorker > 100) {
+    pwmWorker = mycinde.analogReader(pwmWorker, potentionumber[potentiostep]);
+    potentiostep ++;
+    if (potentiostep >= sumstep) {
+      potentiostep = 0;
+    }
+  }
+  delayMicroseconds(pwmWorker);
+  for (i = 0; i < sumstep; i++) {
+    pwm[i] = (pwm[i] - pwmWorker);
+    if (pwm[i] <= 0 && pwmWorker > 100) {
+      pwm[i] = initPwm[i];
+      mycinde.stepwork(STEP[i]); //step work
+    }
+  }
+}
+
+
+
+
