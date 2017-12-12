@@ -2,7 +2,13 @@
 
 #define sumstep 2
 
-#define setpwm (570 + (ch * 4)) //setting stepping values
+#define setpwm (570 + (ch * 4)) //setting stepping values, notusing
+
+#define resultPwm (remainPwm - pwmWorker)
+
+#define workingtime 20000
+
+#define setDIR (ch - 34)
 
 cinde mycinde(sumstep);
 
@@ -17,13 +23,15 @@ int potentiostep = 0; //savings potentiometers value
 
 int pwm[sumstep]; //temporaily using
 int initPwm[sumstep]; //storage inital pwm values
-int stepsetting[sumstep]; //storage status of stepper
 
+int remainPwm;
 int pwmWorker; //working worh pwmworker
 
-int currentstep;
+int currentstep; //saving stepper settings
 
 char ch;
+
+int count;
 
 int i; //using in for action
 
@@ -39,32 +47,56 @@ void setup() {
 //37 ~ 42 = setting stepping numbers
 // A ~ = 65 ~
 // a ~ = 97 ~
+/*
+ * operation starting with 'space'signal
+ * this signal must refill remainPwm to 20000
+ * while remainPwm values over 0, then stepper operation
+ * 1. must making intercept signals
+ * 2. when remainPwm is under 10000 then send to serial signal to pc
+ * 3. getting potentiometer signal
+ */
 void loop() {
   if(Serial.available()) {
     ch = Serial.read();
-    Serial.println (ch + 1);
     if (ch >= 37 && ch <= 42) {
-      currentstep = (ch - 36);  //setting stepping number
-    } else if (ch >= 65 && ch <= 97) {
-      Serial.println ("speed");
-      Serial.println (setpwm);
-    } else if (ch == 35 && ch == 36) {
-      Serial.println ("direction");
-      pwm[currentstep] = 100;
-    } 
+      /* setting stepping numbers
+       * this loop changes only stepping setting numbers
+       * range is 37 to 42
+       * this loop is contain enable pin to low and step is high
+       */
+      currentstep = (ch - 36);
+      mycinde.stepstatus(ENA[currentstep], DIR[currentstep], STEP[currentstep]);
+    } else if (ch >= 48 && ch <= 59) {
+      /*when ch value is 1 ~ 0, then changing pwm values
+      comlete this section
+      */
+      pwm[currentstep] = mycinde.asciino(ch, STEP[currentstep]);
+      Serial.println (pwm[currentstep]);
+    } else if (ch == 35 || ch == 36) {
+      /* 
+       *  this is complete, changing direction works fine
+       */
+      mycinde.statuschanger(setDIR);      
+    }
+    remainPwm = minPwm();
   } else {
-    minPwm();
+    if (remainPwm > 0) {
+      remainPwm = minPwm();
+    }
   }
 }
-
-
 
 
 int settingstep() {
     
 }
 
-void minPwm() {
+int minPwm() {
+  /*
+   * this procedure is now return remainPwm - pwmWorker
+   * when pwmWorker value is over 100 then doing analog read
+   * potentiostep = potentiometer values
+   */
   pwmWorker = pwm[0];
   for (i = 1; i < sumstep; i++) {
     pwmWorker = min(pwm[i], pwmWorker);
@@ -84,6 +116,7 @@ void minPwm() {
       mycinde.stepwork(STEP[i]); //step work
     }
   }
+  return resultPwm;
 }
 
 
