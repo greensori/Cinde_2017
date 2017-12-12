@@ -82,6 +82,11 @@ void loop() {
   } else {
     if (remainPwm > 0) {
       remainPwm = minPwm();
+    } else if (remainPwm <= 0) {
+      for (i = 0; i < sumstep; i++) {
+        mycinde.stepstatus(ENA[i], DIR[i], STEP[i]);   
+        mycinde.statuschanger(0);
+      }
     }
   }
 }
