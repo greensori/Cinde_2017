@@ -39,6 +39,8 @@ int count;
 
 int i; //using in for action
 
+//focus on 
+
 
 void setup() {
   Serial.begin(19200);
@@ -46,7 +48,6 @@ void setup() {
 }
 
 //1 ~ : 48 ~ stepper number
-
 //43.44.45 = + , - , setting accelation
 //35.36 = # $ , setting direction 
 //37 ~ 42 = setting stepping numbers
@@ -81,7 +82,10 @@ void loop() {
       /* 
        *  this is complete, changing direction works fine
        */
-      mycinde.statuschanger(setDIR);      
+      mycinde.statuschanger(setDIR);
+    } else if (ch == 32) {
+      //if enter spacekey then pwm refill
+      remainPwm = 20000;
     }
     remainPwm = minPwm();
   } else {
@@ -89,7 +93,7 @@ void loop() {
       remainPwm = minPwm();
     } else if (remainPwm <= 0) {
       for (i = 0; i < sumstep; i++) {
-        mycinde.stepstatus(ENA[i], DIR[i], STEP[i]);   
+        mycinde.stepstatus(ENA[i], DIR[i], STEP[i]);
         mycinde.statuschanger(0);
       }
     }
@@ -128,7 +132,3 @@ int minPwm() {
   }
   return resultPwm;
 }
-
-
-
-
