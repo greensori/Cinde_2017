@@ -22,6 +22,8 @@ const int DIR[sumstep] = {3, 6};
 
 const int potentionumber[sumstep] = {1, 2};
 
+int workingcount[sumstep] = {0, 0};
+
 int potentiostep = 0; //savings potentiometers value
 //int range = 32767
 
@@ -102,19 +104,20 @@ void loop() {
       //if enter spacekey then pwm refill
       remainPwm = 20000;
       count = 0;
+      workingcount[0] = 0;
+      workingcount[1] = 0;
     }
     remainPwm = minPwm();
   } else {
-    delay(1000);
     if (remainPwm > 0) {
       remainPwm = minPwm(); 
       count++;
-      //--------------------------------------
+      /*
       Serial.print ("Working :");
       Serial.print (count);
       Serial.print ("  remainPwm: ");
       Serial.println (remainPwm);
-      //--------------------------------------
+      */
     } else if (remainPwm <= 0 && stepend == 1) {
       stepend = 0;
       Serial.println ("working end");
@@ -138,11 +141,7 @@ int minPwm() {
    * potentiostep = potentiometer values
    */
   pwmWorker = pwm[0];
-  Serial.print ("basic pwm:");
-  Serial.println (pwm[0]);
   for (i = 1; i < sumstep; i++) {
-    Serial.print ("checking all pwm");
-    Serial.println (pwm[i]);
     pwmWorker = min(pwm[i], pwmWorker);
   }
   remainWorker = pwmWorker;
@@ -159,7 +158,14 @@ int minPwm() {
     //if (pwm[i] <= 0 && remainWorker > 100) {
     if (pwm[i] <= 0) {
       pwm[i] = initPwm[i];
+      workingcount[i]++;
       mycinde.stepwork(STEP[i]); //step work
+      /* workiig great
+      Serial.print ("stepwork");
+      Serial.print (i);
+      Serial.print ("_workingcount");
+      Serial.println (workingcount[i]);
+      */
     }
   }
   return resultPwm;
