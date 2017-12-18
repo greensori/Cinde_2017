@@ -103,9 +103,11 @@ void loop() {
     } else if (ch == 32) {
       //if enter spacekey then pwm refill
       remainPwm = 20000;
+      /*
       count = 0;
       workingcount[0] = 0;
       workingcount[1] = 0;
+      */
     }
     remainPwm = minPwm();
   } else {
