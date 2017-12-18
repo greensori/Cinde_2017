@@ -15,7 +15,7 @@ cinde::cinde(int sumstep)
 /*
  * savings specific stepping infotmation to this
  */
-void cinde::stepstatus(int ena, int dir, int stepno) {   
+void cinde::stepstatus(int ena, int dir, int stepno) {
   _stepinfo[0] = ena;
   _stepinfo[1] = dir;
   _stepinfo[2] = stepno;
@@ -59,12 +59,19 @@ int cinde::asciino(char c1, int stepping) {
 ascii values must always return digit values
 and when we changing curent stepping numbers then digit must be 3
 making (int _digit)
-if _digit values is changed then this module initiating digiit vlaues to 3
+if _digit values is changed then this module initiating digiit values to 3
 this module return pwm values at digit 0 case.
 */
-  if (_workingStep =! stepping) {
+/* complete
+Serial.print ("_workingStep : ");
+Serial.println (_workingStep);
+Serial.print ("input step : ");
+Serial.println (stepping);
+*/
+  if (_workingStep != stepping) {
+    //Serial.println ("setting _working step");
     _digit = 3;
-    _workingStep = stepping; 
+    _workingStep = stepping;
   }  
   _d = (c1 - intmaker); 
   switch (_digit) {
