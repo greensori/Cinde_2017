@@ -6,7 +6,7 @@
 
 #define setpwm (570 + (ch * 4)) //setting stepping values, notusing
 
-#define resultPwm (remainPwm - remainWorker)
+#define resultPwm (totalPwm[0] - totalPwm[1])
 
 #define workingtime 20000
 
@@ -22,17 +22,27 @@ const int DIR[sumstep] = {3, 6};
 
 const int potentionumber[sumstep] = {1, 2};
 
-int workingcount[sumstep] = {0, 0};
-
 int potentiostep = 0; //savings potentiometers value
 //int range = 32767
 
 int pwm[sumstep]; //temporaily using
 int initPwm[sumstep]; //storage inital pwm values
 
-int remainPwm;
-int pwmWorker; //working worh pwmworker
-int remainWorker;
+/*
+ * remain_Pwm <- totalPwm[0]
+ * remain_Worker <- totalPwm[1]
+ * pwm_Worker <- totalPwm[2]
+ */
+int totalPwm[3]; 
+
+/*
+int totalPwm[0];
+int totalPwm[2]; //working worh totalPwm[2]
+int totalPwm[1];
+
+*/
+
+
 
 int currentstep; //saving stepper settings
 int stepend; //tag for step end phase
@@ -59,10 +69,10 @@ void setup() {
 // a ~ = 97 ~
 /*
  * operation starting with 'space'signal
- * this signal must refill remainPwm to 20000
- * while remainPwm values over 0, then stepper operation
+ * this signal must refill totalPwm[0] to 20000
+ * while totalPwm[0] values over 0, then stepper operation
  * 1. must making intercept signals
- * 2. when remainPwm is under 10000 then send to serial signal to pc
+ * 2. when totalPwm[0] is under 10000 then send to serial signal to pc
  * 3. getting potentiometer signal
  */
 void loop() {
@@ -102,25 +112,25 @@ void loop() {
        */       
     } else if (ch == 32) {
       //if enter spacekey then pwm refill
-      remainPwm = 20000;
+      totalPwm[0] = 20000;
       /*
       count = 0;
       workingcount[0] = 0;
       workingcount[1] = 0;
       */
     }
-    remainPwm = minPwm();
+    totalPwm[0] = minPwm();
   } else {
-    if (remainPwm > 0) {
-      remainPwm = minPwm(); 
+    if (totalPwm[0] > 0) {
+      totalPwm[0] = minPwm(); 
       count++;
       /*
       Serial.print ("Working :");
       Serial.print (count);
-      Serial.print ("  remainPwm: ");
-      Serial.println (remainPwm);
+      Serial.print ("  totalPwm[0]: ");
+      Serial.println (totalPwm[0]);
       */
-    } else if (remainPwm <= 0 && stepend == 1) {
+    } else if (totalPwm[0] <= 0 && stepend == 1) {
       stepend = 0;
       Serial.println ("working end");
       for (i = 0; i < sumstep; i++) {
@@ -138,31 +148,31 @@ int settingstep() {
 
 int minPwm() {
   /*
-   * this procedure is now return remainPwm - pwmWorker
-   * when pwmWorker value is over 100 then doing analog read
+   * this procedure is now return totalPwm[0] - totalPwm[2]
+   * when totalPwm[2] value is over 100 then doing analog read
    * potentiostep = potentiometer values
    */
-  pwmWorker = pwm[0];
+  totalPwm[2] = pwm[0];
   for (i = 1; i < sumstep; i++) {
-    pwmWorker = min(pwm[i], pwmWorker);
+    totalPwm[2] = min(pwm[i], totalPwm[2]);
   }
-  remainWorker = pwmWorker;
-  while (pwmWorker > 100) {
-    pwmWorker = mycinde.analogReader(pwmWorker, potentionumber[potentiostep]);
+  totalPwm[1] = totalPwm[2];
+  while (totalPwm[2] > 100) {
+    totalPwm[2] = mycinde.analogReader(totalPwm[2], potentionumber[potentiostep]);
     potentiostep ++;
     if (potentiostep >= sumstep) {
       potentiostep = 0;
     }
   }
-  delayMicroseconds(pwmWorker);
+  delayMicroseconds(totalPwm[2]);
   for (i = 0; i < sumstep; i++) {
-    pwm[i] = (pwm[i] - remainWorker);
-    //if (pwm[i] <= 0 && remainWorker > 100) {
+    pwm[i] = (pwm[i] - totalPwm[1]);
+    //if (pwm[i] <= 0 && totalPwm[1] > 100) {
     if (pwm[i] <= 0) {
       pwm[i] = initPwm[i];
-      workingcount[i]++;
       mycinde.stepwork(STEP[i]); //step work
       /* workiig great
+       * workingcount[i]++;
       Serial.print ("stepwork");
       Serial.print (i);
       Serial.print ("_workingcount");
