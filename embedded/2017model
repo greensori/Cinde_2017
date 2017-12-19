@@ -6,6 +6,8 @@
 
 #define setpwm (570 + (ch * 4)) //setting stepping values, notusing
 
+#define pwmLimit 570
+
 #define resultPwm (totalPwm[0] - totalPwm[1])
 
 #define workingtime 20000
@@ -22,13 +24,12 @@ const int DIR[sumstep] = {3, 6};
 
 const int potentionumber[sumstep] = {1, 2};
 
-int potentiostep = 0; //savings potentiometers value
-//int range = 32767
-
 unsigned int pwm[sumstep]; //temporaily using
 unsigned int initPwm[sumstep]; //storage inital pwm values
+int acceleration[sumstep]; //accelation values
 
-int accel[sumstep];
+int potentiostep = 0; //savings potentiometers value
+//int range = 32767
 
 int totalPwm[3];
 
@@ -120,7 +121,7 @@ void loop() {
     } else if (ch == 32) {
       //if enter spacekey then pwm refill
       totalPwm[0] = 20000;
-      /*
+      /* find initiation values
       count = 0;
       workingcount[0] = 0;
       workingcount[1] = 0;
@@ -130,8 +131,8 @@ void loop() {
   } else {
     if (totalPwm[0] > 0) {
       totalPwm[0] = minPwm(); 
+      /* find working count phase
       count++;
-      /*
       Serial.print ("Working :");
       Serial.print (count);
       Serial.print ("  totalPwm[0]: ");
@@ -159,11 +160,20 @@ int minPwm() {
    * when totalPwm[2] value is over 100 then doing analog read
    * potentiostep = potentiometer values
    */
+  /* input values of pwm
+  Serial.print ("remain pwm");
+  Serial.println (totalPwm[0]);
+  */
   totalPwm[2] = pwm[0];
   for (i = 1; i < sumstep; i++) {
     totalPwm[2] = min(pwm[i], totalPwm[2]);
   }
+  /* min value of pwm
+  Serial.print ("minus pwm");
+  Serial.println (totalPwm[2]);
+  */
   totalPwm[1] = totalPwm[2];
+  /* reading analog values from potentiometer
   while (totalPwm[2] > 100) {
     totalPwm[2] = mycinde.analogReader(totalPwm[2], potentionumber[potentiostep]);
     potentiostep ++;
@@ -171,13 +181,22 @@ int minPwm() {
       potentiostep = 0;
     }
   }
+  */
   delayMicroseconds(totalPwm[2]);
   for (i = 0; i < sumstep; i++) {
     pwm[i] = (pwm[i] - totalPwm[1]);
     //if (pwm[i] <= 0 && totalPwm[1] > 100) {
+    //accelation parts ************************
     if (pwm[i] <= 0) {
-      pwm[i] = initPwm[i];
-      mycinde.stepwork(STEP[i]); //step work
+      if (initPwm[i] >= pwmLimit) {
+        initPwm[i] = (initPwm[i] - acceleration[i]);
+        pwm[i] = initPwm[i];
+      } else {
+        initPwm[i] = pwmLimit;
+        pwm[i] = initPwm[i];
+      }
+      //acceleration end *****************
+      mycinde.stepwork(STEP[i]); //step workstep
       /* workiig great
        * workingcount[i]++;
       Serial.print ("stepwork");
