@@ -1,107 +1,191 @@
-#include "Arduino.h"
 #include "cinde.h"
 
-#define intmaker 48
+#include <Servo.h>
 
-#define delaycoef (rest - 100)
+#define sumstep 2
 
-cinde::cinde(int sumstep)
-{
-  _maxAnalog = sumstep;
-  _count = 0;
-  _workingStep = -1;
-}
+#define setpwm (570 + (ch * 4)) //setting stepping values, notusing
+
+#define resultPwm (totalPwm[0] - totalPwm[1])
+
+#define workingtime 20000
+
+#define setDIR (ch - 34)
+
+cinde mycinde(sumstep);
+
+Servo myservo;
+
+const int ENA[sumstep] = {1, 4};
+const int STEP[sumstep] = {2, 5};
+const int DIR[sumstep] = {3, 6};
+
+const int potentionumber[sumstep] = {1, 2};
+
+int potentiostep = 0; //savings potentiometers value
+//int range = 32767
+
+unsigned int pwm[sumstep]; //temporaily using
+unsigned int initPwm[sumstep]; //storage inital pwm values
+
+int accel[sumstep];
+
+int totalPwm[3];
+
+enum Apin {
+  testApin1 = 1,
+  testApin2 = 2,
+  testApin3 = 100
+};
+/*
+ * remain_Pwm <- totalPwm[0]
+ * remain_Worker <- totalPwm[1]
+ * pwm_Worker <- totalPwm[2]
+ */
 
 /*
- * savings specific stepping infotmation to this
- */
-void cinde::stepstatus(int ena, int dir, int stepno) {
-  _stepinfo[0] = ena;
-  _stepinfo[1] = dir;
-  _stepinfo[2] = stepno;
-  digitalWrite(_stepinfo[0], LOW);
-  digitalWrite(_stepinfo[2], HIGH);
+int totalPwm[0];
+int totalPwm[2]; //working worh totalPwm[2]
+int totalPwm[1];
+
+*/
+
+
+int currentstep; //saving stepper settings
+int stepend; //tag for step end phase
+
+char ch;
+
+int count;
+
+int i; //using in for action
+
+//focus on 
+
+
+void setup() {
+  Serial.begin(19200);
+  myservo.attach(9);
 }
 
-
+//1 ~ : 48 ~ stepper number
+//43.44.45 = + , - , setting accelation
+//35.36 = # $ , setting direction 
+//37 ~ 42 = setting stepping numbers
+// A ~ = 65 ~
+// a ~ = 97 ~
 /*
- * must already savings stepper information at the stepstatus
+ * operation starting with 'space'signal
+ * this signal must refill totalPwm[0] to 20000
+ * while totalPwm[0] values over 0, then stepper operation
+ * 1. must making intercept signals
+ * 2. when totalPwm[0] is under 10000 then send to serial signal to pc
+ * 3. getting potentiometer signal
  */
-void cinde::statuschanger(int count) {
-  if (count == 0) {
-    digitalWrite(_stepinfo[2], LOW);
-    digitalWrite(_stepinfo[0], HIGH);
-  } else if (count == 1) {
-    digitalWrite(_stepinfo[1], LOW);
-  } else if (count == 2) {
-    digitalWrite(_stepinfo[1], HIGH);
-  }
-}
-
-void cinde::stepwork(int number) {
-  Serial.print ("stepwork :");
-  Serial.println (number);
-  digitalWrite(number, LOW);
-  digitalWrite(number, HIGH);
-}
-
-int cinde::analogReader(int rest, int Analog) {
-/*this is reducing microdelaytims, becuase analog read using almost
-100microsecodns
-receving remain delaytimemr using (int rest)
-delaycoef return (int rest - 100)
-*/
-  Serial.print ("_A");
-  Serial.println (analogRead(Analog));
-  return delaycoef;
-}
-
-int cinde::asciino(char c1, int stepping) {
-/*this is changing pwm values seperate stepping
-ascii values must always return digit values
-and when we changing curent stepping numbers then digit must be 3
-making (int _digit)
-if _digit values is changed then this module initiating digiit values to 3
-this module return pwm values at digit 0 case.
-*/
-/* complete
-Serial.print ("_workingStep : ");
-Serial.println (_workingStep);
-Serial.print ("input step : ");
-Serial.println (stepping);
-*/
-  if (_workingStep != stepping) {
-    //Serial.println ("setting _working step");
-    _digit = 3;
-    _workingStep = stepping;
-  }  
-  _d = (c1 - intmaker); 
-  switch (_digit) {
-    case 3:
-      _digitsum = 0;
-      _digitsum += (_d * 1000);
-      _digit --;
-      if (_digitsum == 0) {
-        return 900;
-      } else {
-      return _digitsum;    
+void loop() {
+  if(Serial.available()) {
+    ch = Serial.read();
+    stepend = 1;
+    if (ch >= 37 && ch <= 42) {
+      currentstep = (ch - 37);
+      mycinde.stepstatus(ENA[currentstep], DIR[currentstep], STEP[currentstep]);
+      /* setting stepping numbers
+       * this loop changes only stepping setting numbers
+       * range is 37 to 42 <- % & ' ( ) * 
+       * this loop is contain enable pin to low and step is high
+       */
+      /*
+       * Setting current step checking complete : 17.12.18
+      Serial.print ("setting step : ");
+      Serial.println (currentstep);
+      */
+    } else if (ch >= 48 && ch <= 59) {
+      pwm[currentstep] = mycinde.asciino(ch, STEP[currentstep]);
+      initPwm[currentstep] = pwm[currentstep];
+      /* working great checking complete : 17.12.18
+      Serial.print ("step speed setting :");
+      Serial.print (currentstep);
+      Serial.print ("Speed latency");
+      Serial.println (pwm[currentstep]);
+      */
+      /*when ch value is 1 ~ 0, then changing pwm values
+      comlete this section
+      */
+    } else if (ch == 35 || ch == 36) {
+      mycinde.statuschanger(setDIR);
+      /* 35, 36 <- # $
+       *  this is complete, changing direction works fine
+       * setDIR = (ch - 34)
+       */       
+    } else if (ch == 32) {
+      //if enter spacekey then pwm refill
+      totalPwm[0] = 20000;
+      /*
+      count = 0;
+      workingcount[0] = 0;
+      workingcount[1] = 0;
+      */
+    }
+    totalPwm[0] = minPwm();
+  } else {
+    if (totalPwm[0] > 0) {
+      totalPwm[0] = minPwm(); 
+      count++;
+      /*
+      Serial.print ("Working :");
+      Serial.print (count);
+      Serial.print ("  totalPwm[0]: ");
+      Serial.println (totalPwm[0]);
+      */
+    } else if (totalPwm[0] <= 0 && stepend == 1) {
+      stepend = 0;
+      Serial.println ("working end");
+      for (i = 0; i < sumstep; i++) {
+        mycinde.stepstatus(ENA[i], DIR[i], STEP[i]);
+        mycinde.statuschanger(0);
       }
-    case 2:
-      _digitsum += (_d * 100);
-      _digit --;
-      return _digitsum;
-    case 1:
-      _digitsum += (_d  * 10);
-      _digit --;
-      return _digitsum;
-    case 0:
-      _digitsum += (_d);
-      _digit = 3;
-      return _digitsum;
-  }
+    }
+  } //Serial.available end
 }
 
 
-void cinde::tester() {
-  
+int settingstep() {
+    
+}
+
+int minPwm() {
+  /*
+   * this procedure is now return totalPwm[0] - totalPwm[2]
+   * when totalPwm[2] value is over 100 then doing analog read
+   * potentiostep = potentiometer values
+   */
+  totalPwm[2] = pwm[0];
+  for (i = 1; i < sumstep; i++) {
+    totalPwm[2] = min(pwm[i], totalPwm[2]);
+  }
+  totalPwm[1] = totalPwm[2];
+  while (totalPwm[2] > 100) {
+    totalPwm[2] = mycinde.analogReader(totalPwm[2], potentionumber[potentiostep]);
+    potentiostep ++;
+    if (potentiostep >= sumstep) {
+      potentiostep = 0;
+    }
+  }
+  delayMicroseconds(totalPwm[2]);
+  for (i = 0; i < sumstep; i++) {
+    pwm[i] = (pwm[i] - totalPwm[1]);
+    //if (pwm[i] <= 0 && totalPwm[1] > 100) {
+    if (pwm[i] <= 0) {
+      pwm[i] = initPwm[i];
+      mycinde.stepwork(STEP[i]); //step work
+      /* workiig great
+       * workingcount[i]++;
+      Serial.print ("stepwork");
+      Serial.print (i);
+      Serial.print ("_workingcount");
+      Serial.println (workingcount[i]);
+      */
+    }
+  }
+  return resultPwm;
 }
