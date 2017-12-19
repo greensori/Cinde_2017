@@ -6,8 +6,6 @@
 
 #define setpwm (570 + (ch * 4)) //setting stepping values, notusing
 
-#define pwmLimit 570
-
 #define resultPwm (totalPwm[0] - totalPwm[1])
 
 #define workingtime 20000
@@ -36,7 +34,7 @@ int totalPwm[3];
 enum Apin {
   testApin1 = 1,
   testApin2 = 2,
-  testApin3 = 100
+  testApin3 = 3
 };
 /*
  * remain_Pwm <- totalPwm[0]
@@ -67,6 +65,12 @@ int i; //using in for action
 void setup() {
   Serial.begin(19200);
   myservo.attach(9);
+  for (i = 0; i < sumstep; i++) {
+    pinMode(ENA[i], OUTPUT);
+    digitalWrite(ENA[i], HIGH);
+    pinMode(STEP[i], OUTPUT);
+    pinMode(DIR[i], OUTPUT);
+  }
 }
 
 //1 ~ : 48 ~ stepper number
@@ -174,6 +178,7 @@ int minPwm() {
   */
   totalPwm[1] = totalPwm[2];
   /* reading analog values from potentiometer
+  */
   while (totalPwm[2] > 100) {
     totalPwm[2] = mycinde.analogReader(totalPwm[2], potentionumber[potentiostep]);
     potentiostep ++;
@@ -181,12 +186,17 @@ int minPwm() {
       potentiostep = 0;
     }
   }
+  /*
   */
   delayMicroseconds(totalPwm[2]);
   for (i = 0; i < sumstep; i++) {
     pwm[i] = (pwm[i] - totalPwm[1]);
+    if (pwm[i] <= 0) {
+      pwm[i] = mycinde.stepwork(STEP[i], initPwm[i], acceleration[i]);
+    }
     //if (pwm[i] <= 0 && totalPwm[1] > 100) {
-    //accelation parts ************************
+    /*accelation parts ************************
+     * not using anymore moving to cinde.cpp
     if (pwm[i] <= 0) {
       if (initPwm[i] >= pwmLimit) {
         initPwm[i] = (initPwm[i] - acceleration[i]);
@@ -195,8 +205,9 @@ int minPwm() {
         initPwm[i] = pwmLimit;
         pwm[i] = initPwm[i];
       }
-      //acceleration end *****************
-      mycinde.stepwork(STEP[i]); //step workstep
+      acceleration end *****************
+      */
+      //step workstep
       /* workiig great
        * workingcount[i]++;
       Serial.print ("stepwork");
@@ -205,6 +216,5 @@ int minPwm() {
       Serial.println (workingcount[i]);
       */
     }
-  }
   return resultPwm;
 }
