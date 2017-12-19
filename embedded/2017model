@@ -2,15 +2,20 @@
 
 #include <Servo.h>
 
-#define sumstep 2
-
 #define setpwm (570 + (ch * 4)) //setting stepping values, notusing
 
 #define resultPwm (totalPwm[0] - totalPwm[1])
 
-#define workingtime 20000
-
 #define setDIR (ch - 34)
+
+enum {
+  sumstep = 2,
+  workingtime = 20000
+};
+
+struct mysteps{
+  int stepsno; // mysteps.stepsno
+};
 
 cinde mycinde(sumstep);
 
@@ -30,12 +35,6 @@ int potentiostep = 0; //savings potentiometers value
 //int range = 32767
 
 int totalPwm[3];
-
-enum Apin {
-  testApin1 = 1,
-  testApin2 = 2,
-  testApin3 = 3
-};
 /*
  * remain_Pwm <- totalPwm[0]
  * remain_Worker <- totalPwm[1]
@@ -207,7 +206,6 @@ int minPwm() {
       }
       acceleration end *****************
       */
-      //step workstep
       /* workiig great
        * workingcount[i]++;
       Serial.print ("stepwork");
