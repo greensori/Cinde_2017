@@ -48,14 +48,12 @@ int totalPwm[1];
 
 */
 
-
 int currentstep; //saving stepper settings
 int stepend; //tag for step end phase
 
 char ch;
 
 int count;
-
 int i; //using in for action
 
 //focus on 
