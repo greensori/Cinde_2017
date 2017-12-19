@@ -58,7 +58,6 @@ int i; //using in for action
 
 //focus on 
 
-
 void setup() {
   Serial.begin(19200);
   myservo.attach(9);
@@ -120,13 +119,21 @@ void loop() {
        * setDIR = (ch - 34)
        */       
     } else if (ch == 32) {
-      //if enter spacekey then pwm refill
+      /*
+       * 32 Space
+       * 33 !
+       * 34 "
+       */
       totalPwm[0] = 20000;
       /* find initiation values
       count = 0;
       workingcount[0] = 0;
       workingcount[1] = 0;
       */
+    } else if (ch ==33) {
+      mycinde.statuschanger(0); //current step off
+    } else if (ch == 34) {
+      totalPwm[0] = 0; //all step off
     }
     totalPwm[0] = minPwm();
   } else {
@@ -148,11 +155,6 @@ void loop() {
       }
     }
   } //Serial.available end
-}
-
-
-int settingstep() {
-    
 }
 
 int minPwm() {
