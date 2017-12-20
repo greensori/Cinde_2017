@@ -9,6 +9,11 @@ ard = serial.Serial('COM6', 19200)
 
 count = 1
 
+def autoupdate():
+    autowriter()
+    return
+
+
 def autowriter(**kwards):
     delaytimer = 1
     global count
@@ -29,7 +34,7 @@ def autowriter(**kwards):
             print ('off_msg ard : %s' %msg)
         else:
             print ('end')
-    App.after(delaytimer, autowriter)
+    App.after(delaytimer, autoupdate)
     return
 
 
@@ -41,7 +46,8 @@ Entry1.grid(row = 0, column = 0)
 T1var = IntVar()
 T1check = Checkbutton(App, text = 'starter', variable = T1var)
 T1check.grid(row = 2, column = 0)
-App.after(1, autowriter)
+App.after(1, autoupdate)
+
 
 if __name__ == '__main__':
     App.mainloop()
