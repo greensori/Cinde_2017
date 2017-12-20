@@ -10,7 +10,7 @@ ard = serial.Serial('COM6', 19200)
 count = 1
 
 def autowriter(**kwards):
-    delaytimer = 20
+    delaytimer = 1
     global count
     if (T1var.get() == 1):
         if (count == 1):
@@ -22,9 +22,11 @@ def autowriter(**kwards):
         if msg:
             print ('msg from ard : %s' %msg)
         print (Entry1.get())
-    else:
+    elif (T1var.get() == 0):
         count == 1
         msg = ard.readline(ard.inWaiting()) [:-2]
+        if msg:
+            print ('off_msg ard : %s' %msg)
     App.after(delaytimer, autowriter)
     return
 
