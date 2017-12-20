@@ -24,9 +24,11 @@ def autowriter(**kwards):
         print (Entry1.get())
     elif (T1var.get() == 0):
         count == 1
-        msg = ard.readline(ard.inWaiting()) [:-2]
+        msg = ard.read(ard.inWaiting())
         if msg:
             print ('off_msg ard : %s' %msg)
+        else:
+            print ('end')
     App.after(delaytimer, autowriter)
     return
 
