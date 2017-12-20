@@ -1,0 +1,44 @@
+import serial
+import time
+import numpy as np
+from Tkinter import *
+from PIL import ImageGrab, Image, ImageTk
+
+
+ard = serial.Serial('COM6', 19200)
+
+count = 1
+
+def autowriter(**kwards):
+    delaytimer = 20
+    global count
+    if (T1var.get() == 1):
+        if (count == 1):
+            ard.write(str(T1var.get()))
+            count = 0
+        elif (count == 0):
+            ard.write(' ')
+        msg = ard.readline(ard.inWaiting()) [:-2]
+        if msg:
+            print ('msg from ard : %s' %msg)
+        print (Entry1.get())
+    else:
+        count == 1
+        msg = ard.readline(ard.inWaiting()) [:-2]
+    App.after(delaytimer, autowriter)
+    return
+
+
+App = Tk()
+App.title('smartSer')
+App.resizable(width = False, height = False)
+Entry1 = Entry(App, width = 12)
+Entry1.grid(row = 0, column = 0)
+T1var = IntVar()
+T1check = Checkbutton(App, text = 'starter', variable = T1var)
+T1check.grid(row = 2, column = 0)
+App.after(1, autowriter)
+
+if __name__ == '__main__':
+    App.mainloop()
+    
