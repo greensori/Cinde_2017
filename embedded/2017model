@@ -13,9 +13,11 @@ enum {
   workingtime = 20000
 };
 
-struct mysteps{
-  int stepsno; // mysteps.stepsno
+struct microsteps{
+  const int microsteps[2] = {14, 15};
 };
+
+struct microsteps mymicro; //mymicro.microsteps[1]
 
 cinde mycinde(sumstep);
 
@@ -69,12 +71,15 @@ void setup() {
   }
 }
 
-//1 ~ : 48 ~ stepper number
-//43.44.45 = + , - , setting accelation
-//35.36 = # $ , setting direction 
-//37 ~ 42 = setting stepping numbers
-// A ~ = 65 ~
-// a ~ = 97 ~
+/* current setting steps table
+1 ~ : 48 ~ stepper number
+43.44.45 = + , - , setting accelation
+35.36 = # $ , setting direction 
+37 ~ 42 = setting stepping numbers
+46 ~ setting microsteps
+ A ~ = 65 ~
+ a ~ = 97 ~
+*/
 /*
  * operation starting with 'space'signal
  * this signal must refill totalPwm[0] to 20000
