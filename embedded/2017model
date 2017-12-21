@@ -17,7 +17,14 @@ struct microsteps{
   const int microsteps[2] = {14, 15};
 };
 
-struct microsteps mymicro; //mymicro.microsteps[1]
+struct pwmControl{
+  unsigned int worker;
+  unsigned int init;
+  int accel;
+};
+
+struct pwmControl pwmControl[sumstep];
+struct microsteps microsteps; //mymicro.microsteps[1]
 
 cinde mycinde(sumstep);
 
@@ -28,13 +35,13 @@ const int STEP[sumstep] = {2, 5};
 const int DIR[sumstep] = {3, 6};
 
 const int potentionumber[sumstep] = {1, 2};
+int potentiostep = 0; //savings potentiometers value
+//int range = 32767
 
+// changing to stuct pwmControl
 unsigned int pwm[sumstep]; //temporaily using
 unsigned int initPwm[sumstep]; //storage inital pwm values
 int acceleration[sumstep]; //accelation values
-
-int potentiostep = 0; //savings potentiometers value
-//int range = 32767
 
 int totalPwm[3];
 /*
