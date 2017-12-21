@@ -1,9 +1,12 @@
 #include "Arduino.h"
 #include "cinde.h"
 
-#define intmaker 48
-
 #define delaycoef (rest - 100)
+
+enum { 
+  intmaker = 48,
+  pwmLimit = 570
+};
 
 cinde::cinde(int sumstep)
 {
@@ -38,9 +41,21 @@ void cinde::statuschanger(int count) {
   }
 }
 
-void cinde::stepwork(int number) {
-  digitalWrite(number, LOW);
-  digitalWrite(number, HIGH);
+int cinde::stepwork(int stepno, int Pwm, int Acc) {
+  /*
+  Serial.print ("stepwork :");
+  Serial.println (stepno);
+  */
+  /*accelation parts****************
+  */
+  if (Pwm >= pwmLimit) {
+    Pwm = (Pwm - Acc);
+  } else if (Pwm < pwmLimit) {
+    Pwm = pwmLimit;
+  }
+  digitalWrite(stepno, LOW);
+  digitalWrite(stepno, HIGH);
+  return Pwm;
 }
 
 int cinde::analogReader(int rest, int Analog) {
@@ -101,5 +116,4 @@ Serial.println (stepping);
 
 
 void cinde::tester() {
-  
 }
