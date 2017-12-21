@@ -17,7 +17,7 @@ class cinde
     int _status;
   public:
     cinde(int maxAnalog);
-    void stepwork(int stepno);
+    int stepwork(int stepno, int Pwm, int Acc);
     void stepstatus(int ena, int dir, int stepno);
     void statuschanger(int count);
     int analogReader(int rest, int Analog);
