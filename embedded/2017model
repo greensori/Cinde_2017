@@ -18,7 +18,7 @@ struct microsteps{
 };
 
 struct pwmControl{
-  unsigned int worker;
+  unsigned int latency;
   unsigned int init;
   int accel;
 };
@@ -38,10 +38,11 @@ const int potentionumber[sumstep] = {1, 2};
 int potentiostep = 0; //savings potentiometers value
 //int range = 32767
 
-// changing to stuct pwmControl
-unsigned int pwm[sumstep]; //temporaily using
-unsigned int initPwm[sumstep]; //storage inital pwm values
-int acceleration[sumstep]; //accelation values
+/* changing to stuct pwmControl
+unsigned int pwm[sumstep]; //temporaily using, pwmcontrol[].latency
+unsigned int initPwm[sumstep]; //storage inital pwm values. pwmcontrol[].init
+int acceleration[sumstep]; //accelation values pwmcontrol[].acc
+*/
 
 int totalPwm[3];
 /*
@@ -113,8 +114,8 @@ void loop() {
       Serial.println (currentstep);
       */
     } else if (ch >= 48 && ch <= 59) {
-      pwm[currentstep] = mycinde.asciino(ch, STEP[currentstep]);
-      initPwm[currentstep] = pwm[currentstep];
+      pwmControl[currentstep].latency = mycinde.asciino(ch, STEP[currentstep]);
+      pwmControl[currentstep].init = pwmControl[currentstep].latency;
       /* working great checking complete : 17.12.18
       Serial.print ("step speed setting :");
       Serial.print (currentstep);
@@ -179,10 +180,11 @@ int minPwm() {
   Serial.print ("remain pwm");
   Serial.println (totalPwm[0]);
   */
-  totalPwm[2] = pwm[0];
+  totalPwm[2] = pwmControl[0].latency;
   for (i = 1; i < sumstep; i++) {
-    totalPwm[2] = min(pwm[i], totalPwm[2]);
+    totalPwm[2] = min(pwmControl[i].latency, totalPwm[2]);
   }
+  
   /* min value of pwm
   Serial.print ("minus pwm");
   Serial.println (totalPwm[2]);
@@ -201,9 +203,9 @@ int minPwm() {
   */
   delayMicroseconds(totalPwm[2]);
   for (i = 0; i < sumstep; i++) {
-    pwm[i] = (pwm[i] - totalPwm[1]);
-    if (pwm[i] <= 0) {
-      pwm[i] = mycinde.stepwork(STEP[i], initPwm[i], acceleration[i]);
+    pwmControl[i].latency = (pwmControl[i].latency - totalPwm[1]);
+    if (pwmControl[i].latency <= 0) {
+      pwmControl[i].latency = mycinde.stepwork(STEP[i], pwmControl[i].init, pwmControl[i].accel);
     }
     //if (pwm[i] <= 0 && totalPwm[1] > 100) {
     /*accelation parts ************************
