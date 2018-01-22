@@ -1,0 +1,277 @@
+/************************
+ * machine specification
+ * height = 161 cm
+ * head = 20.4 x 13.98 cm 
+ * shoulder = 28cm - (neck 0pi)
+ * 
+ *** item specification
+ * mainboard = 14 x 14.7 cm, 7mm(h)
+ * stepping motor = 4 x 4cm
+ * gy-91 module must install on head, breast, stomach
+ * 
+ ******* plan
+ * building a shoudler (using 3d printed universial joint)
+ * potentiometer installed stepping
+ * 
+ **************************/
+
+#include "cinde.h"
+
+#include <Servo.h>
+
+#define setpwm (570 + (ch * 4)) //setting stepping values, notusing
+
+#define resultPwm (totalPwm[0] - totalPwm[1])
+
+#define setDIR (ch - 34)
+
+
+/*
+ * sumstep is changing
+ */
+enum {
+  sumstep = 2,
+  workingtime = 20000
+};
+
+/*
+ * this is purpose for controlling microsteps value
+ * microsteps.m0[n];
+ * working with digital output
+ * use like this microsteps.m0/high
+ */
+struct microsteps{
+  const int m0[sumstep] = {14, 15};
+  const int m1[sumstep] = {14, 15};
+  const int m2[sumstep] = {14, 15};
+};
+
+/*
+ * savings seperate stepping pwm values
+ * use like thish pwmControl[n].latency
+ */
+struct pwmControl{
+  unsigned int latency;
+  unsigned int init;
+  int accel;
+};
+
+/*
+ * structure naming
+ */
+struct pwmControl pwmControl[sumstep];
+struct microsteps mymicro; //mymicro.microsteps[1]
+
+
+/*
+ * naming my modules
+ */
+ 
+cinde mycinde(sumstep);
+
+Servo myservo;
+
+const int ENA[sumstep] = {1, 4};
+const int STEP[sumstep] = {2, 5};
+const int DIR[sumstep] = {3, 6};
+
+const int potentionumber[sumstep] = {1, 2};
+int potentiostep = 0; //savings potentiometers value
+//int range = 32767
+
+
+int totalPwm[3];
+/*
+ * remain_Pwm <- totalPwm[0]
+ * remain_Worker <- totalPwm[1]
+ * pwm_Worker <- totalPwm[2]
+ */
+
+/* changing to stuct pwmControl
+unsigned int pwm[sumstep]; //temporaily using, pwmcontrol[].latency
+unsigned int initPwm[sumstep]; //storage inital pwm values. pwmcontrol[].init
+int acceleration[sumstep]; //accelation values pwmcontrol[].acc
+*/
+
+/*
+int totalPwm[0];
+int totalPwm[2]; //working worh totalPwm[2]
+int totalPwm[1];
+
+*/
+
+int currentstep; //saving stepper settings
+int stepend; //tag for step end phase
+
+char ch;
+
+int count;
+int i; //using in for action
+
+//focus on 
+
+void setup() {
+  Serial.begin(19200);
+  myservo.attach(9);
+  for (i = 0; i < sumstep; i++) {
+    pinMode(ENA[i], OUTPUT);
+    digitalWrite(ENA[i], HIGH);
+    pinMode(STEP[i], OUTPUT);
+    pinMode(DIR[i], OUTPUT);
+    pinMode(mymicro.m0[i], OUTPUT);
+    pinMode(mymicro.m1[i], OUTPUT);
+    pinMode(mymicro.m2[i], OUTPUT);
+  }
+}
+
+/* current setting steps table
+1 ~ : 48 ~ stepper number
+43.44.45 = + , - , setting accelation
+35.36 = # $ , setting direction 
+37 ~ 42 = setting stepping numbers
+46 ~ setting microsteps
+ A ~ = 65 ~
+ a ~ = 97 ~
+*/
+/*
+ * operation starting with 'space'signal
+ * this signal must refill totalPwm[0] to 20000
+ * while totalPwm[0] values over 0, then stepper operation
+ * 1. must making intercept signals
+ * 2. when totalPwm[0] is under 10000 then send to serial signal to pc
+ * 3. getting potentiometer signal
+ */
+void loop() {
+  if(Serial.available()) {
+    ch = Serial.read();
+    stepend = 1;
+    if (ch >= 37 && ch <= 42) {
+      currentstep = (ch - 37);
+      mycinde.stepstatus(ENA[currentstep], DIR[currentstep], STEP[currentstep]);
+      /* setting stepping numbers
+       * this loop changes only stepping setting numbers
+       * range is 37 to 42 <- % & ' ( ) * 
+       * this loop is contain enable pin to low and step is high
+       /
+      /*
+       * Setting current step checking complete : 17.12.18
+      Serial.print ("setting step : ");
+      Serial.println (currentstep);
+      */
+    } else if (ch >= 48 && ch <= 59) {
+      pwmControl[currentstep].latency = mycinde.asciino(ch, STEP[currentstep]);
+      pwmControl[currentstep].init = pwmControl[currentstep].latency;
+      /* working great checking complete : 17.12.18
+      Serial.print ("step speed setting :");
+      Serial.print (currentstep);
+      Serial.print ("Speed latency");
+      Serial.println (pwm[currentstep]);
+      */
+      /*when ch value is 1 ~ 0, then changing pwm values
+      comlete this section
+      */
+    } else if (ch == 35 || ch == 36) {
+      mycinde.statuschanger(setDIR);
+      /* 35, 36 <- # $
+       *  this is complete, changing direction works fine
+       * setDIR = (ch - 34)
+       */       
+    } else if (ch == 32) {
+      /*
+       * 32 Space
+       * 33 !
+       * 34 "
+       */
+      totalPwm[0] = 20000;
+      /* find initiation values
+      count = 0;
+      workingcount[0] = 0;
+      workingcount[1] = 0;
+      */
+    } else if (ch ==33) {
+      mycinde.statuschanger(0); //current step off
+    } else if (ch == 34) {
+      totalPwm[0] = 0; //all step off
+    }
+    totalPwm[0] = minPwm();
+  } else {
+    if (totalPwm[0] > 0) {
+      totalPwm[0] = minPwm(); 
+      /* find working count phase
+      count++;
+      Serial.print ("Working :");
+      Serial.print (count);
+      Serial.print ("  totalPwm[0]: ");
+      Serial.println (totalPwm[0]);
+      */
+    } else if (totalPwm[0] <= 0 && stepend == 1) {
+      stepend = 0;
+      Serial.println ("working end");
+      for (i = 0; i < sumstep; i++) {
+        mycinde.stepstatus(ENA[i], DIR[i], STEP[i]);
+        mycinde.statuschanger(0);
+      }
+    }
+  } //Serial.available end
+}
+
+int minPwm() {
+  /*
+   * this procedure is now return totalPwm[0] - totalPwm[2]
+   * when totalPwm[2] value is over 100 then doing analog read
+   * potentiostep = potentiometer values
+   */
+  /* input values of pwm
+  Serial.print ("remain pwm");
+  Serial.println (totalPwm[0]);
+  */
+  totalPwm[2] = pwmControl[0].latency;
+  for (i = 1; i < sumstep; i++) {
+    totalPwm[2] = min(pwmControl[i].latency, totalPwm[2]);
+  }
+  
+  /* min value of pwm
+  Serial.print ("minus pwm");
+  Serial.println (totalPwm[2]);
+  */
+  totalPwm[1] = totalPwm[2];
+  /* reading analog values from potentiometer
+  */
+  while (totalPwm[2] > 100) {
+    totalPwm[2] = mycinde.analogReader(totalPwm[2], potentionumber[potentiostep]);
+    potentiostep ++;
+    if (potentiostep >= sumstep) {
+      potentiostep = 0;
+    }
+  }
+  /*
+  */
+  delayMicroseconds(totalPwm[2]);
+  for (i = 0; i < sumstep; i++) {
+    pwmControl[i].latency = (pwmControl[i].latency - totalPwm[1]);
+    if (pwmControl[i].latency <= 0) {
+      pwmControl[i].latency = mycinde.stepwork(STEP[i], pwmControl[i].init, pwmControl[i].accel);
+    }
+    //if (pwm[i] <= 0 && totalPwm[1] > 100) {
+    /*accelation parts ************************
+     * not using anymore moving to cinde.cpp
+    if (pwm[i] <= 0) {
+      if (initPwm[i] >= pwmLimit) {
+        initPwm[i] = (initPwm[i] - acceleration[i]);
+        pwm[i] = initPwm[i];
+      } else {
+        initPwm[i] = pwmLimit;
+        pwm[i] = initPwm[i];
+      }
+      acceleration end *****************
+      */
+      /* workiig great
+       * workingcount[i]++;
+      Serial.print ("stepwork");
+      Serial.print (i);
+      Serial.print ("_workingcount");
+      Serial.println (workingcount[i]);
+      */
+    }
+  return resultPwm;
+}
