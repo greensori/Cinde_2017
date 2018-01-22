@@ -70,24 +70,11 @@ delaycoef return (int rest - 100)
 }
 
 int cinde::asciino(char c1, int stepping) {
-/*this is changing pwm values seperate stepping
-ascii values must always return digit values
-and when we changing curent stepping numbers then digit must be 3
-making (int _digit)
-if _digit values is changed then this module initiating digiit values to 3
-this module return pwm values at digit 0 case.
-*/
-/* complete
-Serial.print ("_workingStep : ");
-Serial.println (_workingStep);
-Serial.print ("input step : ");
-Serial.println (stepping);
-*/
   if (_workingStep != stepping) {
     //Serial.println ("setting _working step");
     _digit = 3;
     _workingStep = stepping;
-  }  
+  }
   _d = (c1 - intmaker); 
   switch (_digit) {
     case 3:
@@ -112,6 +99,38 @@ Serial.println (stepping);
       _digit = 3;
       return _digitsum;
   }
+}
+
+/*
+ * devided value receiving present devided steps value
+ */
+int cinde::drv8825Microstep(int devided, int m0, int m1, int m2) {
+  if (devided == 1) {
+    digitalWrite(m0, LOW);
+    digitalWrite(m1, LOW);
+    digitalWrite(m2, LOW);
+  } else if (devided == 2) {
+    digitalWrite(m0, HIGH);
+    digitalWrite(m1, LOW);
+    digitalWrite(m2, LOW);    
+  } else if (devided == 4){
+    digitalWrite(m0, LOW);
+    digitalWrite(m1, HIGH);
+    digitalWrite(m2, LOW);    
+  } else if (devided == 8) {
+    digitalWrite(m0, HIGH);
+    digitalWrite(m1, HIGH);
+    digitalWrite(m2, LOW);    
+  } else if (devided == 16) {
+    digitalWrite(m0, LOW);
+    digitalWrite(m1, LOW);
+    digitalWrite(m2, HIGH);    
+  } else if (devided == 32) {
+    digitalWrite(m0, HIGH);
+    digitalWrite(m1, LOW);
+    digitalWrite(m2, HIGH);    
+  }
+  return devided;
 }
 
 
