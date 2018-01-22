@@ -21,7 +21,8 @@ class cinde
     void stepstatus(int ena, int dir, int stepno);
     void statuschanger(int count);
     int analogReader(int rest, int Analog);
-    int asciino(char c1, int stepping);   
+    int drv8825Microstep(int decided, int m0, int m1, int m2);
+    int asciino(char c1, int stepping);
     void tester();
 };
 
