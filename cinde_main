@@ -13,6 +13,8 @@
  * building a shoudler (using 3d printed universial joint)
  * potentiometer installed stepping
  * 
+ ************about this script
+ * using for arm control
  **************************/
 
 #include "cinde.h"
@@ -39,8 +41,11 @@ enum {
  * microsteps.m0[n];
  * working with digital output
  * use like this microsteps.m0/high
+ * microcontrol must return present microsteps value
+ * microsteps.devided[n] return how many steps devided, storaged
  */
 struct microsteps{
+  unsigned int devided[sumstep];
   const int m0[sumstep] = {14, 15};
   const int m1[sumstep] = {14, 15};
   const int m2[sumstep] = {14, 15};
