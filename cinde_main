@@ -30,6 +30,8 @@
 
 #define setDIR (ch - 34)
 
+#define microPin (ch - 58)
+
 
 /*
  * sumstep is changing
@@ -49,7 +51,7 @@ enum {
  * basic devided value is 1, maximum is 32
  */
 struct microsteps{
-  unsigned int devided[sumstep] = {1, 1};
+  float devided[sumstep] = {1, 1};
   const int m0[sumstep] = {14, 15};
   const int m1[sumstep] = {14, 15};
   const int m2[sumstep] = {14, 15};
@@ -203,6 +205,12 @@ void loop() {
       mycinde.statuschanger(0); //current step off
     } else if (ch == 34) {
       totalPwm[0] = 0; //all step off
+    } else if (ch >= 58 && ch <= 63) {
+      mymicro.devided[currentstep] = 1; //this make microdevided values to 0
+      if (microPin >= 2) {
+        mymicro.devided[currentstep] = pow(2, microPin);
+      }
+      mymicro.devided[currentstep] = mycinde.drv8825Microstep(mymicro.devided[currentstep], mymicro.m0[currentstep], mymicro.m1[currentstep], mymicro.m2[currentstep]);
     }
     totalPwm[0] = minPwm();
   } else {
