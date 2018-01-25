@@ -103,8 +103,9 @@ int cinde::asciino(char c1, int stepping) {
 
 /*
  * devided value receiving present devided steps value
+ * it returns present devided staeps
  */
-int cinde::drv8825Microstep(int devided, int m0, int m1, int m2) {
+int cinde::drv8825Microstep(float devided, int m0, int m1, int m2) {
   if (devided == 1) {
     digitalWrite(m0, LOW);
     digitalWrite(m1, LOW);
