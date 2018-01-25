@@ -1,13 +1,16 @@
 /************************
  * machine specification
- * height = 161 cm
- * head = 20.4 x 13.98 cm 
+ * height = 161cm
+ * head = 20.4 x 13.98cm
  * shoulder = 28cm - (neck 0pi)
  * 
  *** item specification
- * mainboard = 14 x 14.7 cm, 7mm(h)
- * stepping motor = 4 x 4cm
+ * mainboard = 140 x 147 mm, 7mm(h)
  * gy-91 module must install on head, breast, stomach
+ * 2 servos installing on neck
+ * need to buying usb camera
+ * nema17 = 42 x 42 mm (34thickness) 52mm(max)
+ * coupler = 20 *pi.mm (m4)
  * 
  ******* plan
  * building a shoudler (using 3d printed universial joint)
@@ -43,9 +46,10 @@ enum {
  * use like this microsteps.m0/high
  * microcontrol must return present microsteps value
  * microsteps.devided[n] return how many steps devided, storaged
+ * basic devided value is 1, maximum is 32
  */
 struct microsteps{
-  unsigned int devided[sumstep];
+  unsigned int devided[sumstep] = {1, 1};
   const int m0[sumstep] = {14, 15};
   const int m1[sumstep] = {14, 15};
   const int m2[sumstep] = {14, 15};
@@ -87,6 +91,8 @@ int potentiostep = 0; //savings potentiometers value
 
 int totalPwm[3];
 /*
+ * totalPwm id making for control seperate steppers
+ * this vvar is savings remain pwm to here
  * remain_Pwm <- totalPwm[0]
  * remain_Worker <- totalPwm[1]
  * pwm_Worker <- totalPwm[2]
