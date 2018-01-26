@@ -12,6 +12,13 @@
  * nema17 = 42 x 42 mm (34thickness) 52mm(max)
  * coupler = 20 *pi.mm (m4)
  * 
+ * ******
+ * arm specification
+ * univ.joint
+ * 20pi.round
+ * 28*24mm square joint parts
+ * 24pi.2t + 28*24mm square pars must print square parts first
+ * 
  ******* plan
  * building a shoudler (using 3d printed universial joint)
  * potentiometer installed stepping
@@ -32,12 +39,17 @@
 
 #define microPin (ch - 58)
 
+#define transmitPwmStep (ch - 45)
 
+#define setAtoZPwm (600 + (60 * (ch - 64)))
+
+#define setServoPosition (6 * (ch - 96)
 /*
  * sumstep is changing
  */
 enum {
   sumstep = 2,
+  sumservo = 1,
   workingtime = 20000
 };
 
@@ -67,9 +79,14 @@ struct pwmControl{
   int accel;
 };
 
+struct servoControl{
+  const int ServoPin[sumservo] = {9};
+  unsigned int ServoPosition;
+};
 /*
  * structure naming
  */
+struct servoControl myServoControl; 
 struct pwmControl pwmControl[sumstep];
 struct microsteps mymicro; //mymicro.microsteps[1]
 
@@ -110,11 +127,12 @@ int acceleration[sumstep]; //accelation values pwmcontrol[].acc
 int totalPwm[0];
 int totalPwm[2]; //working worh totalPwm[2]
 int totalPwm[1];
-
 */
 
 int currentstep; //saving stepper settings
 int stepend; //tag for step end phase
+
+int currentservo;
 
 char ch;
 
@@ -125,7 +143,7 @@ int i; //using in for action
 
 void setup() {
   Serial.begin(19200);
-  myservo.attach(9);
+  myservo.attach(myServoControl.ServoPin[0]);
   for (i = 0; i < sumstep; i++) {
     pinMode(ENA[i], OUTPUT);
     digitalWrite(ENA[i], HIGH);
@@ -145,6 +163,7 @@ void setup() {
 46 ~ setting microsteps
  A ~ = 65 ~
  a ~ = 97 ~
+ #, $ = serbo control action
 */
 /*
  * operation starting with 'space'signal
@@ -171,7 +190,9 @@ void loop() {
       Serial.print ("setting step : ");
       Serial.println (currentstep);
       */
-    } else if (ch >= 48 && ch <= 59) {
+    } else if (ch == 35 && ch == 36) {
+       currentservo = (ch - 34);
+    }else if (ch >= 48 && ch <= 59) {
       pwmControl[currentstep].latency = mycinde.asciino(ch, STEP[currentstep]);
       pwmControl[currentstep].init = pwmControl[currentstep].latency;
       /* working great checking complete : 17.12.18
@@ -206,6 +227,9 @@ void loop() {
     } else if (ch == 34) {
       totalPwm[0] = 0; //all step off
     } else if (ch >= 58 && ch <= 63) {
+      /*
+       *  changing microstep revolution
+       */
       mymicro.devided[currentstep] = 1; //this make microdevided values to 0
       if (microPin >= 2) {
         mymicro.devided[currentstep] = pow(2, microPin);
@@ -263,8 +287,6 @@ int minPwm() {
       potentiostep = 0;
     }
   }
-  /*
-  */
   delayMicroseconds(totalPwm[2]);
   for (i = 0; i < sumstep; i++) {
     pwmControl[i].latency = (pwmControl[i].latency - totalPwm[1]);
