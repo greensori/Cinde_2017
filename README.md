@@ -17,6 +17,8 @@ stepping setting table
 
 # nema1.7 stepper 3.7:1 gear ratio ( a - b- c- d)
 
+** 3.7 : 1 gear ratio stepper doesnt have
+
 minimun step = 2
 
 360step = almost 180'
