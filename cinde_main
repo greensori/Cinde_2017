@@ -79,25 +79,33 @@ struct pwmControl{
   int accel;
 };
 
+/*
+* ServoPin. setting thie digital output pin number
+* pwm. woring likes stp pwm
+* ServoPosition. saving the last receiving potition of SRV
+*/
 struct servoControl{
   const int ServoPin[sumservo] = {9};
+  unsinged int pwm[sumservo];
   unsigned int ServoPosition;
 };
-/*
+/****************************************************
  * structure naming
  */
 struct servoControl myServoControl; 
 struct pwmControl pwmControl[sumstep];
 struct microsteps mymicro; //mymicro.microsteps[1]
+//****************************************************
 
-
-/*
+/*****************************************************
  * naming my modules
  */
  
 cinde mycinde(sumstep);
 
 Servo myservo;
+
+//*******************************************************
 
 const int ENA[sumstep] = {1, 4};
 const int STEP[sumstep] = {2, 5};
@@ -256,6 +264,19 @@ void loop() {
       }
     }
   } //Serial.available end
+}
+
+/*
+* stp doesn't have enough tq to operate
+* using mg995 to joint parts
+* doesn't need to install potentiometer on every pt
+*/
+void srvContorl(char ch) {
+  if (ch >= 36 && ch <= 40) {
+    currentSRV = chtempdefine; //must making this
+  } else if (ch >= 41 && ch <= 96) {
+    //myServoControl.ServoPin[currenSRV]
+  }
 }
 
 int minPwm() {
