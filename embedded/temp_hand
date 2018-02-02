@@ -1,0 +1,61 @@
+/*
+ * hand control script NEW 2018.2.2
+ * just working with control arm parts
+ * \working with nano board
+ */
+
+#include <Servo.h>
+
+#define totalServo 7
+
+enum myenum{
+  aa = 1,
+  bb,
+  cc,
+  dd  
+};
+
+struct CtlServo{
+  const int pinNo[totalServo] = {1, 2, 3, 4, 5, 6, 7};
+  unsigned pt[totalServo];
+  unsigned pwm[totalServo];  //saving seeperate ServoPwm
+};
+
+struct CtlServo myCtl;
+
+Servo servoPitch, servoYaw, servoRoll, servoF1, servoF2, servoF3, servoF4;
+
+int currentServo;
+
+char ch;
+
+
+
+void setup() {
+  Serial.begin(19200);
+  servoPitch.attach(myCtl.pinNo[0]);
+  servoYaw.attach(myCtl.pinNo[1]);
+  servoRoll.attach(myCtl.pinNo[2]);
+  servoF1.attach(myCtl.pinNo[3]);
+  servoF2.attach(myCtl.pinNo[4]);
+  servoF3.attach(myCtl.pinNo[5]);
+  servoF4.attach(myCtl.pinNo[6]);
+}
+
+/*
+ * 1. setting currentServo working
+ * 2. seperate steps working just plus 1step
+ * *** how to workign this script?
+ * 1. setiing target pwm -> myClt.pt[currentServo] = ReceivePwm;
+ * 2. workign with pwm delay ->
+ * delayMicroseconds(myClt.pwm[currentServo]);
+ * servoYaw.write(myClt.pt[currentServo] + 1); => must making this proc
+ */
+
+void loop() {
+  if (Serial.available() > 0) {
+    ch = Serial.read();
+    //servoPitch.write(myClt.pt[currentServo]);
+  }
+}
+
