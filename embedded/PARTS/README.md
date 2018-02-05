@@ -8,6 +8,12 @@
 
 3. ElbowJoint to handparts
 
+all joint are working with Servos
+
+seperate joint will be installing GY-91
+
+control (1, 2, (3 ~ 5)) finger groups, no reason to control fingers seperatly
+
 4. Breast and Waist Parts
 
 5. Legs
