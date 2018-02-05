@@ -6,6 +6,8 @@
 
 2. Neck to Shoulder Parts
 
+working with planetary stepper with servos
+
 3. ElbowJoint to handparts
 
 all joint are working with Servos
