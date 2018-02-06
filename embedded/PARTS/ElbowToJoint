@@ -8,11 +8,25 @@
 
 #define totalServo 7
 
+#define SetCurrentStep (ch - 33)
+
+#define pwmResult (700 + (ch * 5)) 
+
+enum RangePWM{
+  mimPwm = 700,
+  maxPwm = 1500
+}; 
+// map(input, 0, 180, RangePWM[0], RangePwm[1]);
+
 enum myenum{
   aa = 1,
   bb,
   cc,
   dd  
+};
+
+enum servoNumber{
+  
 };
 
 struct CtlServo{
@@ -23,12 +37,16 @@ struct CtlServo{
 
 struct CtlServo myCtl;
 
-Servo servoPitch, servoYaw, servoRoll, servoF1, servoF2, servoF3, servoF4;
+Servo servoPitch, servoYaw, servoRoll, servoElbow, servoF1, servoF2, servoF3;
 
+//this works with SetCurrentStep
+// this conclusion to movement of seperate step
 int currentServo;
 
+//this recevign serial information
 char ch;
 
+int i;
 
 
 void setup() {
@@ -36,10 +54,10 @@ void setup() {
   servoPitch.attach(myCtl.pinNo[0]);
   servoYaw.attach(myCtl.pinNo[1]);
   servoRoll.attach(myCtl.pinNo[2]);
-  servoF1.attach(myCtl.pinNo[3]);
-  servoF2.attach(myCtl.pinNo[4]);
-  servoF3.attach(myCtl.pinNo[5]);
-  servoF4.attach(myCtl.pinNo[6]);
+  servoElbow.attach(myCtl.pinNo[3]);
+  servoF1.attach(myCtl.pinNo[4]);
+  servoF2.attach(myCtl.pinNo[5]);
+  servoF3.attach(myCtl.pinNo[6]);
 }
 
 /*
@@ -50,13 +68,54 @@ void setup() {
  * 2. workign with pwm delay ->
  * delayMicroseconds(myClt.pwm[currentServo]);
  * servoYaw.write(myClt.pt[currentServo] + 1); => must making this proc
+ * servo.writeMicroseconds(uS);   values 700 to 2300 range
  */
 
 void loop() {
   if (Serial.available() > 0) {
     ch = Serial.read();
+    if (ch >= 33 && ch <= 42) {
+      //Setting current servo values
+      cerrentServo = SetCurrentStep;
+    } else if (ch > 42) {
+      //set current servo pwm
+      myClt.pwm[currentServo] = pwmResult;   
+    }
     //servoPitch.write(myClt.pt[currentServo]);
   }
 }
 
 
+int operate() {
+  for (i = 0; i < totalServo; i++) {
+    if (myCtl.pt[i] > 0) {
+      myCtl.pwm[i]
+    }
+  }
+}
+
+//setting seperate pwm with servos
+
+void tempworking() {
+  /*
+   * find the least pwm meter
+   * adjust pinNo[i] after delay
+   * when enter this proc must adjust pwm
+   * working dleay (pwm) after pt = pt  + pwm
+   */
+  delayMicroseconds(i);
+  
+  servoPitch.writeMicroseconds(myCtl.pinNo[0]);
+  servoYaw.writeMicroseconds(myCtl.pinNo[1]);
+  servoRoll.writeMicroseconds(myCtl.pinNo[2]);
+  servoElbow.writeMicroseconds(myCtl.pinNo[3]);
+  servoF1.writeMicroseconds(myCtl.pinNo[4]);
+  servoF2.writeMicroseconds(myCtl.pinNo[5]);
+  servoF3.writeMicroseconds(myCtl.pinNo[6]);
+}
+
+/*
+ * totalServo
+ * for (i = 0; i < totalServo; i++) {
+ * 
+ */
