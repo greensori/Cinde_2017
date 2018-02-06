@@ -7,7 +7,6 @@ import numpy as np
 #[SVO types, emotional types, process link, previous lang step
 #    total stacked lang step, 
 #rule input
-
 #this proc must return return word type
 
 
@@ -20,12 +19,12 @@ process link
 previous lang step, based 0, if communications are longer then this step will +1
 
 '''
-
-
-def ReceveWord(rxWord):
-    
+def savingsPreviousTalking():
     return
 
+
+def ReceveWord(rxWord):    
+    return
 
 def emotionType(**kwards):
     gyro = kwards.get('gyro', 1)
@@ -43,23 +42,19 @@ class mytest:
 def TreeClassify():
     x = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [1, 2], [1, 2]]
     y = [0, 1, 'hello', 3, 4, 1, 'nice']
-
-
     clf = tree.DecisionTreeClassifier()
     clf = clf.fit(x, y)
-
-
     print clf.predict([[1, 1], [2, 2]])
     print clf.predict_proba([[1, 1], [3, 3]])
 
 
 def randomTree():
     print 'randomforest'
-    x = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [1, 2], [1, 2]]
-    y = [0, 1, 'hello', 3, 4, 1, 'nice']
+    x = [[0, 0], [1, 1], [1, 1], [1, 1], [2, 2], [3, 3], [4, 4], [1, 2], [1, 2]]
+    y = [0, 'thisisone', 'thisistwo', 'thisisThree', 'hello', 3, 4, 1, 'nice']
     clf = RandomForestClassifier()
     clf.fit(x, y)
-    print clf.predict([[2, 2], [1, 1]])
+    print clf.predict([[2, 2]])
     print clf.feature_importances_
 
 
