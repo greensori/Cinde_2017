@@ -3,6 +3,19 @@ from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 
 
+
+''' Frame structure
+neck has 15mm.pi round bolt
+65 * 70mm round outer shape
+lengh must 75mm
+neck structure is nutshape connected 15pi.mm round bolt
+and univ joint connected witih seperate shoulder
+
+'''
+
+
+#must input facial recognition
+
 #language settings
 #[SVO types, emotional types, process link, previous lang step
 #    total stacked lang step, 
@@ -10,8 +23,26 @@ import numpy as np
 #this proc must return return word type
 
 
-
+#must checking his own face id number
+#this Tree must not purpose for making word combination
+#working with mp3 files
 '''
+_wordType
+Name - code : 0
+Verb - code : 1
+Noun - code : 2
+Pronoun - code : 3
+Adjective - code : 4
+Adverb - code : 5
+Preposition - code : 6
+
+_wordStructure
+Subject - Code : 0
+Verb - Code : 1
+Object - Code : 2
+
+
+
 SOV, result of image  process
 emotional types, was defined by stat of device's temperature, gyroscope value
 emotion stat, if device listne specific word then this stat will be changing
@@ -19,11 +50,66 @@ process link
 previous lang step, based 0, if communications are longer then this step will +1
 
 '''
+
+#this is recent structure
+'''
+EmoitonStat
+Normal - code : 0
+Happy - code :1
+Excited - code : 2
+Angry - code : 3
+Sad - code : 4
+Tired - code : 5
+Bored - code : 6
+
+PtsStat
+Normal - code : 0
+Tilting - code : 1
+
+ConversationLevel(start 0 to @)
+ : if this value will going  smae level over {} times then enter number to oneself 
+
+existingPersonInArea(0 to @)
+
+Personal Conversation history
+
+personalD will be saving on numberFormat
+'''
+
+'''
+1. if getting 
+'''
+
+
+
+
+def TreeNN():
+    return                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+
+
+#getting languge mp3 files
+class langTree:
+    def __init__(self, faceID): #input ID on here, and checking history
+        self.ConversationLevel = 0
+        self.c = 100
+        self.faceID = faceID
+        self.ConversationLevel = self.RetConc()
+        print self.ConversationLevel
+        print self.c
+    def nowStat(self):
+        print 'good'
+        return
+    def RetConc(self):
+        myconc = 100
+        self.c = 500
+        return myconc
+    
+
 def savingsPreviousTalking():
     return
 
 
-def ReceveWord(rxWord):    
+def ReceveWord(rxWord):
     return
 
 def emotionType(**kwards):
@@ -33,13 +119,9 @@ def emotionType(**kwards):
     return
 
 
-class mytest:
-    def __init__(self, personalID):
-        return
-    def abc(self):
-        return
 
 def TreeClassify():
+    print 'decisionTree'
     x = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [1, 2], [1, 2]]
     y = [0, 1, 'hello', 3, 4, 1, 'nice']
     clf = tree.DecisionTreeClassifier()
@@ -55,8 +137,11 @@ def randomTree():
     clf = RandomForestClassifier()
     clf.fit(x, y)
     print clf.predict([[2, 2]])
+    print clf.predict_proba([[2, 2]])
     print clf.feature_importances_
+    
 
 
-randomTree()
-
+#randomTree()
+aa = langTree(110)
+aa.nowStat()
