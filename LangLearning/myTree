@@ -140,8 +140,7 @@ def randomTree():
     print clf.predict_proba([[2, 2]])
     print clf.feature_importances_
     
-
-
-#randomTree()
-aa = langTree(110)
-aa.nowStat()
+if __name__ == '__main__':
+    #randomTree()
+    aa = langTree(110)
+    aa.nowStat()
