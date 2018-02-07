@@ -1,0 +1,27 @@
+import numpy as np
+from PIL import ImageGrab
+import cv2
+
+
+knn = cv2.KNearest()
+
+
+class GetFaceID:
+    def __init__(self):
+        self.train = np.random.randint(0, 100, (25, 2)).astype(np.float32)
+        self.responses = np.random.randint(0, 2, (25, 1)).astype(np.float32)
+    def GetFace(self):
+        return
+    def myKnn(self):
+        '''
+        if dist over specific value then making newcomer in train and respose data
+        '''
+        newcomer = np.random.randint(0,100,(1,2)).astype(np.float32)
+        knn.train(self.train, self.responses)
+        ret, results, neighbours, dist = knn.find_nearest(newcomer, 5)
+        print results
+
+
+if __name__ == '__main__':
+    aa = GetFaceID()
+    aa.myKnn()
