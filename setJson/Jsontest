@@ -1,0 +1,21 @@
+import json
+import numpy as np
+
+def newJson():
+    customer = {
+        'id' : 1442,
+        'talking' : 5524,
+        'facefeature' : [
+            {'aa' : 1, 'bb' : 2, 'cc' : 3},
+            {'aa' : 2, 'bb' : 2, 'cc' : 2}
+            ]
+        }
+    jsonString = json.dumps(customer)
+    print jsonString
+    print type(jsonString)
+    jsonString = json.dumps(customer, indent=4)
+    print jsonString
+    return
+
+if __name__ == '__main__':
+    newJson()
