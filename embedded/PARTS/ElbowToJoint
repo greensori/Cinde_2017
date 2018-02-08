@@ -29,10 +29,17 @@ enum servoNumber{
   
 };
 
+
+/*
+ * woring min values of pwm
+ * delaymocroseconds(min(ctl.remainpwm))
+ */
 struct CtlServo{
   const int pinNo[totalServo] = {1, 2, 3, 4, 5, 6, 7};
   unsigned pt[totalServo];
-  unsigned pwm[totalServo];  //saving seeperate ServoPwm
+  unsigned pwm[totalServo];  //saving seperate ServoPwm
+  unsigned remainPwm[totalServo]; //remain values ofpwm
+  int workPhase[totalServo]; // if this value is 1, then working
 };
 
 struct CtlServo myCtl;
@@ -72,6 +79,10 @@ void setup() {
  */
 
 void loop() {
+  int a;
+  a = testOperate(1200, 1);
+  a = testOperate(1200, -1);
+  /*
   if (Serial.available() > 0) {
     ch = Serial.read();
     if (ch >= 33 && ch <= 42) {
@@ -83,13 +94,33 @@ void loop() {
     }
     //servoPitch.write(myClt.pt[currentServo]);
   }
+  */
+}
+
+//working with servoPitch
+int testOperate(int delaytimer, int DIR) {
+  if (DIR == 1) {
+    Serial.println ("working positive direction");
+    for (i = 700; i <= 2300; i++) {
+      delayMicroseconds(delaytimer);
+      servoPitch.writeMicroseconds(i); //700 to 2300
+    }
+    return (-1); //positioce direction
+  } else if (DIR == -1) {
+    Serial.println ("working negative direction");
+    for (i = 2300; i >= 700; i--) {
+      delayMicroseconds(delaytimer);
+      servoPitch.writeMicroseconds(i); //700 to 2300
+    }
+    return (1);
+  }
 }
 
 
 int operate() {
   for (i = 0; i < totalServo; i++) {
     if (myCtl.pt[i] > 0) {
-      myCtl.pwm[i]
+      myCtl.pwm[i];
     }
   }
 }
@@ -103,15 +134,17 @@ void tempworking() {
    * when enter this proc must adjust pwm
    * working dleay (pwm) after pt = pt  + pwm
    */
-  delayMicroseconds(i);
-  
-  servoPitch.writeMicroseconds(myCtl.pinNo[0]);
-  servoYaw.writeMicroseconds(myCtl.pinNo[1]);
-  servoRoll.writeMicroseconds(myCtl.pinNo[2]);
-  servoElbow.writeMicroseconds(myCtl.pinNo[3]);
-  servoF1.writeMicroseconds(myCtl.pinNo[4]);
-  servoF2.writeMicroseconds(myCtl.pinNo[5]);
-  servoF3.writeMicroseconds(myCtl.pinNo[6]);
+
+  delayMicroseconds(10);
+  for (i = 0; i < totalServo; i++) {
+    servoPitch.writeMicroseconds(myCtl.pinNo[0]);
+    servoYaw.writeMicroseconds(myCtl.pinNo[1]);
+    servoRoll.writeMicroseconds(myCtl.pinNo[2]);
+    servoElbow.writeMicroseconds(myCtl.pinNo[3]);
+    servoF1.writeMicroseconds(myCtl.pinNo[4]);
+    servoF2.writeMicroseconds(myCtl.pinNo[5]);
+    servoF3.writeMicroseconds(myCtl.pinNo[6]);
+   }
 }
 
 /*
