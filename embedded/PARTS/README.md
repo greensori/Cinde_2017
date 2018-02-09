@@ -6,6 +6,8 @@
 
 2. Neck to Shoulder Parts
 
+3servo, 1step
+
 working with planetary stepper with servos
 
 3. ElbowJoint to handparts
@@ -13,6 +15,8 @@ working with planetary stepper with servos
 all joint are working with Servos
 
 seperate joint will be installing GY-91
+
+install 6 servos
 
 control (1, 2, (3 ~ 5)) finger groups, no reason to control fingers seperatly
 
