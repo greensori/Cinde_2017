@@ -6,6 +6,7 @@
  * will be installing lidar and rader modules
  */
 
+
 #define numberServo 4
 
 struct ctlServo{
@@ -13,9 +14,9 @@ struct ctlServo{
   //Roll, pitch, Yaw, Jaw
   unsigned int pt[numberServo];
   unsigned int pwm[numberServo];
-  unsigned int remainPwm[numberServo];
-  int workPhase[totalServo];
-}
+  int remainPwm[numberServo];
+  int workPhase[numberServo];
+};
 
 Servo servoRoll, servoPitch, servoYaw, servoJaw;
 
@@ -23,6 +24,11 @@ struct ctlServo myCtl;
 
 char ch;
 int i;
+int currentServo;
+
+/*
+ * setting currentServo and settign pwm and target position
+ */
 
 void setup() {
   Serial.begin(19200);
@@ -33,8 +39,56 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.Available()) {
+  if (Serial.available()) {
     ch = Serial.read();
-      
+    if (ch == 35) {
+      Serial.println (ch);
+    }
+  } else {
+    Serial.println (pwmDelay());
+    delay(1000);
   }
+}
+
+/*
+ * working 700 to 2300
+ * delayMicroseconds(pwmDelay);
+ * getting minimal values of pwm and setting seperate delay values
+ */
+int pwmDelay() {
+  return (8);
+}
+
+
+void idleWork() {
+  int resultPwm = myCtl.remainPwm[i];
+  for (i = 1; i < numberServo; i++) {
+    resultPwm = min(resultPwm, myCtl.remainPwm[i]);
+  }
+  delayMicroseconds(resultPwm);
+  if (myCtl.remainPwm[0] <= 0) {
+    servoRoll.writeMicroseconds(myCtl.pwm[0]);
+    mtCtl.remainPwm[0] = myCtl.pwm[0];
+  }
+  if (myCtl.remainPwm[1] <= 0) {
+    servoPitch.writeMicroseconds(myCtl.pwm[1]);
+    mtCtl.remainPwm[1] = myCtl.pwm[1];
+  }
+  if (myCtl.remainPwm[2] <= 0) {
+    servoYaw.writeMicroseconds(myCtl.pwm[2]);
+    mtCtl.remainPwm[2] = myCtl.pwm[2];
+  }
+  if (myCtl.remainPwm[3] <= 0) {
+    servoJaw.writeMicroseconds(myCtl.pwm[3]);
+    mtCtl.remainPwm[3] = myCtl.pwm[3];
+  }
+  /*
+  for (i = 0; i < numberServo; i++) {
+    myCtl.remainPwm[i] = (myCtl.remainPwm[i] - resultPwm);
+    if (myCtl.remainPwm[i] <= 0) {
+      servoRoll.writeMicroseconds(myCtl.pwm[i]);
+      myCtl.remainPwm[i] = myCtl.pwm[i];
+    }
+  }
+  */
 }
