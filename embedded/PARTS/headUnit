@@ -1,10 +1,40 @@
+#include <Servo.h>
 
+/*
+ * this headunit has 4 servos include neck parts
+ * 1 sda/scl port must using in gy91 module
+ * will be installing lidar and rader modules
+ */
+
+#define numberServo 4
+
+struct ctlServo{
+  const int pinNo[numberServo] = {1, 2, 3, 4};
+  //Roll, pitch, Yaw, Jaw
+  unsigned int pt[numberServo];
+  unsigned int pwm[numberServo];
+  unsigned int remainPwm[numberServo];
+  int workPhase[totalServo];
+}
+
+Servo servoRoll, servoPitch, servoYaw, servoJaw;
+
+struct ctlServo myCtl;
+
+char ch;
+int i;
 
 void setup() {
   Serial.begin(19200);
-
+  servoRoll.attach(myCtl.pinNo[0]);
+  servoPitch.attach(myCtl.pinNo[1]);
+  servoYaw.attach(myCtl.pinNo[2]);
+  servoJaw.attach(myCtl.pinNo[3]);
 }
 
 void loop() {
-
+  if (Serial.Available()) {
+    ch = Serial.read();
+      
+  }
 }
