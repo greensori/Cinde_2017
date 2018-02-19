@@ -1,0 +1,28 @@
+#include <Servo.h>
+
+Servo testServo;
+
+#define defServo testServo.writeMicroseconds(i)
+
+#define delayTimer 10
+
+char ch;
+
+int i;
+
+void setup() {
+  Serial.begin(19200);
+  testServo.attach(8);
+}
+
+void loop() {
+  for (i = 700; i <= 2300; i++) {
+    delayMicroseconds(delayTimer);
+    defServo; //700 to 2300
+  }
+  Serial.println ("DIR changed");
+  for (i = 2300; i >= 700; i--) {
+    delayMicroseconds(delayTimer);
+    defServo; //700 to 2300
+  }
+}
