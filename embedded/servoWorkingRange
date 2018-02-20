@@ -4,7 +4,7 @@ Servo testServo;
 
 #define defServo testServo.writeMicroseconds(i)
 
-#define delayTimer 10
+#define delayTimer 1000
 
 char ch;
 
