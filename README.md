@@ -54,6 +54,8 @@ operation voltage : 3.5- 8.4
 
 // 0 ~ 9 setting acc value
 
+# TFMini LIDAR ( red - vcc, black - ground, white - rx, green - tx)
+
 
 
 // need to setting velosity = a~ t
