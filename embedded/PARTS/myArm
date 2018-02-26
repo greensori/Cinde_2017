@@ -1,0 +1,67 @@
+//Woeking With megaBoard
+//end of finger will be installed FSP pressure sensor
+
+
+#include <Servo.h>
+
+#define servoNumber 3
+
+enum servoMov{
+  DS3218 = 1,
+  MG995
+};
+
+
+Servo UER, LER, EP, WY, WP;
+/*
+ * UER : upper elbow Roll
+ * LER : lower elbow Roll
+ * EP : elbow Pitch
+ * WY : wrist Yaw
+ * WP : wrist Pitch
+ */
+
+struct ctlServo{
+  const int pinNo[servoNumber] = {1, 2, 3, 4, 5};
+  int recPwm[servoNumber];
+  int remPwm[servoNumber];
+  unsigned int pt[servoPwm];//must setting basic potition value
+};
+
+struct ctlServo ctlServo;
+
+char ch; //receving ch datas
+
+int Rem; //savings remain PWMValue, this value is 0, then servo working
+int i;
+
+void setup() {
+  Serial.begin(19200);
+  UER.attach(1);
+  LER.attach(2);
+  EP.attach(3);
+}
+
+void loop() {
+  Serial.println (MG995);
+  Serial.println (servoMov(1));
+}
+
+int minFider() {
+  Rem = ctlServo.remPwm[0];
+  for (i = 1; i < servoNumber; i++) {
+    Rem = min(Rem, ctlServo.remPwm[i]);
+  }
+  delayMicroseconds(Rem);
+  for (i = 0; i < servoNumber; i++) {
+    if (ctlServo.remPwm[i] <= 0) {
+      ctlServo.remPwm[i] = ctlServo.recPwm[i];
+      ctlServo.pt[i] += MG995;
+    }
+  }
+  UER.writeMicroseconds(ctlServo.pt[0]);
+  LER.writeMicroseconds(ctlServo.pt[1]);
+  EP.writeMicroseconds(ctlServo.pt[2]);
+  return Rem;
+}
+
