@@ -1,31 +1,46 @@
 //Woeking With megaBoard
-//end of finger will be installed FSP pressure sensor
-
+//end of finger will be installed FSP pressure sensor(analog read 4)
+//Amount of sevo Unit is 9
+//installing 1 load cells (Lower Arm)
+//installing 1 Gy-91(Upper Arm)
 
 #include <Servo.h>
 
-#define servoNumber 3
+#define servoNumber 9
+
+#define servoUnit (ch - 33) // this value is will be current servo
+
+#define pwmCoef if(i < 5){Serial.println("check");}
 
 enum servoMov{
   DS3218 = 1,
   MG995
 };
 
+enum analogPin{
+  pinA = 1,
+  pinB,
+  pinC,
+  pinD,
+  pinE
+};
 
-Servo UER, LER, EP, WY, WP;
+
+Servo UER, LER, EP, WY, WP, F1, F2, F3, F4;
 /*
  * UER : upper elbow Roll
  * LER : lower elbow Roll
  * EP : elbow Pitch
  * WY : wrist Yaw
  * WP : wrist Pitch
+ * F1 ~ 4 : finger Unit
  */
 
 struct ctlServo{
-  const int pinNo[servoNumber] = {1, 2, 3, 4, 5};
+  const int pinNo[servoNumber] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
   int recPwm[servoNumber];
   int remPwm[servoNumber];
-  unsigned int pt[servoPwm];//must setting basic potition value
+  unsigned int pt[servoNumber];//must setting basic potition value
 };
 
 struct ctlServo ctlServo;
@@ -33,19 +48,34 @@ struct ctlServo ctlServo;
 char ch; //receving ch datas
 
 int Rem; //savings remain PWMValue, this value is 0, then servo working
-int i;
+int i; // using in for loop
 
+int currentServo;
+
+//UER, LER, EP, WY, WP, F1, F2, F3, F4
 void setup() {
   Serial.begin(19200);
-  UER.attach(1);
-  LER.attach(2);
-  EP.attach(3);
+  UER.attach(ctlServo.pinNo[0]);
+  LER.attach(ctlServo.pinNo[1]);
+  EP.attach(ctlServo.pinNo[2]);
+  WY.attach(ctlServo.pinNo[3]);
+  WP.attach(ctlServo.pinNo[4]);
+  F1.attach(ctlServo.pinNo[5]);
+  F2.attach(ctlServo.pinNo[6]);
+  F3.attach(ctlServo.pinNo[7]);
+  F4.attach(ctlServo.pinNo[8]);
 }
 
 void loop() {
-  Serial.println (MG995);
-  Serial.println (servoMov(1));
+  if (Serial.available()) {
+    ch = Serial.read();
+    if (ch >= 33 && ch <= 42) {
+      currentServo = servoUnit;
+      Serial.println (currentServo);
+    }
+  }
 }
+
 
 int minFider() {
   Rem = ctlServo.remPwm[0];
@@ -54,6 +84,7 @@ int minFider() {
   }
   delayMicroseconds(Rem);
   for (i = 0; i < servoNumber; i++) {
+    ctlServo.remPwm[i] -= Rem;
     if (ctlServo.remPwm[i] <= 0) {
       ctlServo.remPwm[i] = ctlServo.recPwm[i];
       ctlServo.pt[i] += MG995;
@@ -64,4 +95,4 @@ int minFider() {
   EP.writeMicroseconds(ctlServo.pt[2]);
   return Rem;
 }
-
+//UER, LER, EP, WY, WP, F1, F2, F3, F4
