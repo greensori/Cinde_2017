@@ -12,6 +12,7 @@
 
 #define pwmCoef if(i < 5){Serial.println("check");}
 
+
 enum servoMov{
   DS3218 = 1,
   MG995
@@ -23,6 +24,11 @@ enum analogPin{
   pinC,
   pinD,
   pinE
+};
+
+//savings on position that there is no sigal status
+enum servoBasicPt{
+  
 };
 
 
@@ -41,6 +47,9 @@ struct ctlServo{
   int recPwm[servoNumber];
   int remPwm[servoNumber];
   unsigned int pt[servoNumber];//must setting basic potition value
+  int accelPwm[servoNumber]; //10 is pwm accelate 1 times, this reducing pwm
+  int accelPwmStorage[servoNumber];
+  int idleStat[servoNumber]; //if this value over point then enter noSignalProc
 };
 
 struct ctlServo ctlServo;
@@ -87,7 +96,7 @@ int minFider() {
     ctlServo.remPwm[i] -= Rem;
     if (ctlServo.remPwm[i] <= 0) {
       ctlServo.remPwm[i] = ctlServo.recPwm[i];
-      ctlServo.pt[i] += MG995;
+      ctlServo.pt[i] += MG995; //position moving
     }
   }
   UER.writeMicroseconds(ctlServo.pt[0]);
@@ -95,4 +104,17 @@ int minFider() {
   EP.writeMicroseconds(ctlServo.pt[2]);
   return Rem;
 }
+
+int accelator(int no) {
+  if (ctlServo.accelPwmStorage[no] < 10) {
+    ctlServo.accelPwmStorage[no] += ctlServo.accelPwm[no];
+  } else if (ctlServo.accelPwmStorage[no] >= 10) {
+    ctlServo.accelPwmStorage[no] -= (10 - ctlServo.accelPwm[no]);
+    return -1;
+  }
+}
 //UER, LER, EP, WY, WP, F1, F2, F3, F4
+
+void noSignalStat(int target) {
+    
+}
