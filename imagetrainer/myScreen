@@ -40,12 +40,11 @@ class myScreen:
                 x,y,h,w = cv2.boundingRect(cnt)
                 cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
         cv2.imshow('cnts', frame)
-        print len(contours)
     def myHarris(self):
         frame = self.img
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        frame = np.float32(frame)
-        dst = cv2.cornerHarris(frame, 2, 3, 0.04)
+        nframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        nframe = np.float32(nframe)
+        dst = cv2.cornerHarris(nframe, 2, 3, 0.04)
         dst = cv2.dilate(dst,None)
         frame[dst>0.01*dst.max()] = [0,50,0]
         cv2.imshow('Harris', frame)
@@ -59,7 +58,6 @@ class myScreen:
 if __name__ == '__main__':
     aa = myScreen(filePath = 'D:\print\cv2017-1587.png')
     aa.myCanny()
-    #aa.myHarris()
+    aa.myHarris()
     aa.myContour()
     aa.showScreen()
-
