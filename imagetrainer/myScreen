@@ -1,18 +1,23 @@
 import cv2
 import numpy as np
+import psutil
+import time
 
+font = cv2.FONT_HERSHEY_SIMPLEX
 
 class myScreen:
     def __init__(self, **kwards):
         self.path = kwards.get('filePath', None)
-        capNo = kwards.get('capNo', -1)
+        capNo = kwards.get('capNo', 0)
         if self.path:
             self.img = cv2.imread(self.path)
-            print 'read image file'
+            print ('read image file')
         else:
-            self.cap = cv2.videoCapture(capNo)
-            print 'open camera'
+            self.cap = cv2.VideoCapture(capNo)
+            print ('open camera')
     def getFrame(self):
+        ref, self.img = (self.cap).read()
+        '''
         if cap.isOpened():
             print (cap.get(3))
             print (cap.get(4))
@@ -24,6 +29,7 @@ class myScreen:
             cv2.imshow('dst',frame)
             if cv2.waitKey(0) & 0xff == 27:
                 cv2.destroyAllWindows()
+                '''
     def myCanny(self):
         cannyFrame = self.img
         cannyFrame = cv2.cvtColor(cannyFrame, cv2.COLOR_BGR2GRAY)
@@ -36,9 +42,9 @@ class myScreen:
         cntFrame = self.img
         cntFrame = cv2.cvtColor(cntFrame, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(cntFrame,255,1,1,11,2)
-        contours,hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        __, contours,hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contours:
-            if len(cnt) > 50:
+            if len(cnt) > 200:
                 x,y,h,w = cv2.boundingRect(cnt)
                 cv2.rectangle(cntFrame,(x,y),(x+w,y+h),(0,255,0),2)
         cv2.imshow('cnts', cntFrame)
@@ -61,29 +67,40 @@ class myScreen:
         cv2.imshow('SIFT', siftFrame)
         return
     def myGoodFeaturesToTrack(self):
+        count=0
         goodfeatureFrame = self.img
         goodfeatureFrame = cv2.cvtColor(goodfeatureFrame, cv2.COLOR_BGR2GRAY)
         corners = cv2.goodFeaturesToTrack(goodfeatureFrame,10,0.01,10)
         corners = np.int0(corners)
-        print (corners)
+        emptyFrame = np.zeros((int((self.cap).get(4)), int((self.cap).get(3)), 3), np.uint8)
+        goodfeatureFrame = emptyFrame
         for i in corners:
+            count = count + 1
             x, y = i.ravel()
-            cv2.circle(goodfeatureFrame, (x, y), 3, 255, 1)
+            cv2.putText(goodfeatureFrame, ('Feature : %d' %count), (x, y), font, 0.6, (0, 125, 0), 2)
+            cv2.circle(goodfeatureFrame, (x, y), 5, 255, 1)
         cv2.imshow('goodFeatures', goodfeatureFrame)
         return
     def showScreen(self):
         rawFrame = self.img
         cv2.imshow('dst',rawFrame)
-        if cv2.waitKey(0) & 0xff == ord('q'):
-            cv2.destroyAllWindows()
-            return
+    def cvEnd(self):
+        (self.cap).release()
+        cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    aa = myScreen(filePath = 'D:\print\cv2017-1587.png')
-    aa.myCanny()
-    aa.mySIFT()
-    aa.myContour()
-    aa.myGoodFeaturesToTrack()
-    aa.myHarris()
-    aa.showScreen()
+    aa = myScreen()
+    stime = time.time()
+    while True:
+        print('complete in {} seconds'.format(time.time() - stime))
+        print('CPU usage : %s' %str(psutil.cpu_percent()))
+        stime = time.time()
+        aa.getFrame()
+        aa.myCanny()
+        #aa.mySIFT()
+        aa.myContour()
+        aa.myGoodFeaturesToTrack()
+        aa.myHarris()
+        if cv2.waitKey(25) & 0xff == ord('q'):
+            aa.cvEnd()
