@@ -25,40 +25,64 @@ class myScreen:
             if cv2.waitKey(0) & 0xff == 27:
                 cv2.destroyAllWindows()
     def myCanny(self):
-        frame = self.img
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        frame = cv2.GaussianBlur(frame, (5, 5), 0)
-        frame = cv2.Canny(frame, 10, 70)
-        ret, mask = cv2.threshold(frame, 70, 255, cv2.THRESH_BINARY_INV)
+        cannyFrame = self.img
+        cannyFrame = cv2.cvtColor(cannyFrame, cv2.COLOR_BGR2GRAY)
+        cannyFrame = cv2.GaussianBlur(cannyFrame, (5, 5), 0)
+        cannyFrame = cv2.Canny(cannyFrame, 10, 70)
+        ret, mask = cv2.threshold(cannyFrame, 70, 255, cv2.THRESH_BINARY_INV)
         cv2.imshow('Gausian',mask)
+        return
     def myContour(self):
-        frame = self.img
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        thresh = cv2.adaptiveThreshold(frame,255,1,1,11,2)
+        cntFrame = self.img
+        cntFrame = cv2.cvtColor(cntFrame, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.adaptiveThreshold(cntFrame,255,1,1,11,2)
         contours,hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contours:
             if len(cnt) > 50:
                 x,y,h,w = cv2.boundingRect(cnt)
-                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-        cv2.imshow('cnts', frame)
+                cv2.rectangle(cntFrame,(x,y),(x+w,y+h),(0,255,0),2)
+        cv2.imshow('cnts', cntFrame)
+        return
     def myHarris(self):
-        frame = self.img
-        nframe = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        harrisFrame = self.img
+        nframe = cv2.cvtColor(harrisFrame, cv2.COLOR_BGR2GRAY)
         nframe = np.float32(nframe)
         dst = cv2.cornerHarris(nframe, 2, 3, 0.04)
         dst = cv2.dilate(dst,None)
-        frame[dst>0.01*dst.max()] = [0,50,0]
-        cv2.imshow('Harris', frame)
+        harrisFrame[dst>0.01*dst.max()] = [0,50,0]
+        cv2.imshow('Harris', harrisFrame)
+        return
+    def SIFT(self):
+        siftFrame = self.img
+        siftFrame = cv2.cvtColor(siftFrame, cv2.COLOR_BGR2GRAY)
+        sift = cv2.SIFT()
+        kp = sift.detect(siftFrame,None)
+        siftFrame=cv2.drawKeypoints(siftFrame,kp,flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        cv2.imshow('SIFT', siftFrame)
+        return
+    def goodfeaturesToTrack(self):
+        goodfeatureFrame = self.img
+        goodfeatureFrame = cv2.cvtColor(goodfeatureFrame, cv2.COLOR_BGR2GRAY)
+        corners = cv2.goodFeaturesToTrack(goodfeatureFrame,10,0.01,10)
+        corners = np.int0(corners)
+        for i in corners:
+            x, y = i.ravel()
+            cv2.circle(goodfeatureFrame, (x, y), 3, 255, -1)
+        cv2.imshow('goodFeatures', goodfeatureFrame)
+        return
     def showScreen(self):
-        frame = self.img
-        cv2.imshow('dst',frame)
+        rawFrame = self.img
+        cv2.imshow('dst',rawFrame)
         if cv2.waitKey(0) & 0xff == 27:
             cv2.destroyAllWindows()
+            return
 
 
 if __name__ == '__main__':
     aa = myScreen(filePath = 'D:\print\cv2017-1587.png')
     aa.myCanny()
-    aa.myHarris()
+    #aa.myHarris()
+    aa.SIFT()
     aa.myContour()
+    aa.goodfeaturesToTrack()
     aa.showScreen()
