@@ -74,7 +74,7 @@ class myScreen:
     def showScreen(self):
         rawFrame = self.img
         cv2.imshow('dst',rawFrame)
-        if cv2.waitKey(0) & 0xff == 27:
+        if cv2.waitKey(0) & 0xff == ord('q'):
             cv2.destroyAllWindows()
             return
 
