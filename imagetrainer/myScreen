@@ -52,7 +52,7 @@ class myScreen:
         harrisFrame[dst>0.01*dst.max()] = [0,50,0]
         cv2.imshow('Harris', harrisFrame)
         return
-    def SIFT(self):
+    def mySIFT(self):
         siftFrame = self.img
         siftFrame = cv2.cvtColor(siftFrame, cv2.COLOR_BGR2GRAY)
         sift = cv2.SIFT()
@@ -60,7 +60,7 @@ class myScreen:
         siftFrame=cv2.drawKeypoints(siftFrame,kp,flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
         cv2.imshow('SIFT', siftFrame)
         return
-    def goodFeaturesToTrack(self):
+    def myGoodFeaturesToTrack(self):
         goodfeatureFrame = self.img
         goodfeatureFrame = cv2.cvtColor(goodfeatureFrame, cv2.COLOR_BGR2GRAY)
         corners = cv2.goodFeaturesToTrack(goodfeatureFrame,10,0.01,10)
@@ -82,8 +82,8 @@ class myScreen:
 if __name__ == '__main__':
     aa = myScreen(filePath = 'D:\print\cv2017-1587.png')
     aa.myCanny()
-    aa.SIFT()
+    aa.mySIFT()
     aa.myContour()
-    aa.goodFeaturesToTrack()
+    aa.myGoodFeaturesToTrack()
     aa.myHarris()
     aa.showScreen()
