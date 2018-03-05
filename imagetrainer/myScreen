@@ -36,7 +36,7 @@ class myScreen:
         thresh = cv2.adaptiveThreshold(frame,255,1,1,11,2)
         contours,hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contours:
-            if len(cnt) > 5:
+            if len(cnt) > 50:
                 x,y,h,w = cv2.boundingRect(cnt)
                 cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
         cv2.imshow('cnts', frame)
