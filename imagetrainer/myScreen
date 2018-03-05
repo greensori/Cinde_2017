@@ -1,0 +1,65 @@
+import cv2
+import numpy as np
+
+
+class myScreen:
+    def __init__(self, **kwards):
+        self.path = kwards.get('filePath', None)
+        capNo = kwards.get('capNo', -1)
+        if self.path:
+            self.img = cv2.imread(self.path)
+            print 'enter'
+        else:
+            self.cap = cv2.videoCapture(capNo)
+    def getFrame(self):
+        if cap.isOpened():
+            print (cap.get(3))
+            print (cap.get(4))
+            ret, frame = cap.read()
+            if ret:
+                return frame
+        else:
+            frame = self.img
+            cv2.imshow('dst',frame)
+            if cv2.waitKey(0) & 0xff == 27:
+                cv2.destroyAllWindows()
+    def myCanny(self):
+        frame = self.img
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        frame = cv2.GaussianBlur(frame, (5, 5), 0)
+        frame = cv2.Canny(frame, 10, 70)
+        ret, mask = cv2.threshold(frame, 70, 255, cv2.THRESH_BINARY_INV)
+        cv2.imshow('Gausian',mask)
+    def myContour(self):
+        frame = self.img
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.adaptiveThreshold(frame,255,1,1,11,2)
+        contours,hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        for cnt in contours:
+            if len(cnt) > 5:
+                x,y,h,w = cv2.boundingRect(cnt)
+                cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+        cv2.imshow('cnts', frame)
+        print len(contours)
+    def myHarris(self):
+        frame = self.img
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        frame = np.float32(frame)
+        dst = cv2.cornerHarris(frame, 2, 3, 0.04)
+        dst = cv2.dilate(dst,None)
+        frame[dst>0.01*dst.max()] = [0,50,0]
+        cv2.imshow('Harris', frame)
+    def showScreen(self):
+        frame = self.img
+        cv2.imshow('dst',frame)
+        if cv2.waitKey(0) & 0xff == 27:
+            cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    aa = myScreen(filePath = 'D:\print\cv2017-1587.png')
+    aa.myCanny()
+    #aa.myHarris()
+    aa.myContour()
+    aa.showScreen()
+
