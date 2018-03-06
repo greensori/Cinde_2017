@@ -1,0 +1,36 @@
+import multiprocessing as mp
+from multiprocessing import Process, current_process
+import os, time
+
+def fx(x):
+    print (current_process().name)
+    proc_name = os.getpid()
+    print (proc_name)
+    return (x * x)
+
+
+def newtast():
+    newproc = Process(target = worker())
+    newproc.start()
+    newproc.join()
+
+class mpClass:
+    def __init__ (self):
+        a = 10
+    def myProc(self, num):
+        procName = os.getpid()
+        print (procName)
+
+
+if __name__ == '__main__':
+    print("Number of cpu : ", mp.cpu_count())
+    numbers = [5, 8, 11, 14]
+    procs = []
+    aa = mpClass()
+    for index, number in enumerate(numbers):
+        proc = Process(target = aa.myProc(number))
+        procs.append(proc)
+        proc.start()
+    for proc in procs:
+        proc.join()
+    print 'end'
