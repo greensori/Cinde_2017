@@ -32,6 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 SoftwareSerial mySerial(10, 11);      // Uno RX (TFMINI TX), Uno TX (TFMINI RX)
 TFMini tfmini;
 
+uint16_t dist;
+uint16_t strength;
+
 void setup() {
   // Step 1: Initialize hardware serial port (serial debug port)
   Serial.begin(115200);
@@ -49,8 +52,8 @@ void setup() {
 
 void loop() {
   // Take one TF Mini distance measurement
-  uint16_t dist = tfmini.getDistance();
-  uint16_t strength = tfmini.getRecentSignalStrength();
+  dist = tfmini.getDistance();
+  strength = tfmini.getRecentSignalStrength();
 
   // Display the measurement
   Serial.print(dist);
