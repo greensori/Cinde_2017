@@ -83,7 +83,7 @@ class myScreen:
         rawFrame = self.frame
         cv2.imshow('dst',rawFrame)
     def cvEnd(self):
-        (self.cap).release()
+        (self.frame).release()
         cv2.destroyAllWindows()
 
 
@@ -93,6 +93,7 @@ if __name__ == '__main__':
     while True:
         print('complete in {} seconds'.format(time.time() - stime))
         print('CPU usage : %s' %str(psutil.cpu_percent()))
+        print('Memory usage : %s' &str(psutil.virtual_memory().used)
         stime = time.time()
         aa.getFrame()
         aa.myCanny()
