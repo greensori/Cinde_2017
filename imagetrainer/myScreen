@@ -8,13 +8,13 @@ class myScreen:
         self.path = kwards.get('filePath', None)
         capNo = kwards.get('capNo', 0)
         if self.path:
-            self.img = cv2.imread(self.path)
+            self.frame = cv2.imread(self.path)
             print ('read image file')
         else:
-            self.cap = cv2.VideoCapture(capNo)
+            self.frame = cv2.VideoCapture(capNo)
             print ('open camera')
     def getFrame(self):
-        ref, self.img = (self.cap).read()
+        ref, self.frame = (self.cap).read()
         '''
         if cap.isOpened():
             print (cap.get(3))
@@ -29,7 +29,7 @@ class myScreen:
                 cv2.destroyAllWindows()
                 '''
     def myCanny(self):
-        cannyFrame = self.img
+        cannyFrame = self.frame
         cannyFrame = cv2.cvtColor(cannyFrame, cv2.COLOR_BGR2GRAY)
         cannyFrame = cv2.GaussianBlur(cannyFrame, (5, 5), 0)
         cannyFrame = cv2.Canny(cannyFrame, 10, 70)
@@ -37,7 +37,7 @@ class myScreen:
         cv2.imshow('Gausian',mask)
         return
     def myContour(self):
-        cntFrame = self.img
+        cntFrame = self.frame
         cntFrame = cv2.cvtColor(cntFrame, cv2.COLOR_BGR2GRAY)
         thresh = cv2.adaptiveThreshold(cntFrame,255,1,1,11,2)
         __, contours,hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -48,7 +48,7 @@ class myScreen:
         cv2.imshow('cnts', cntFrame)
         return
     def myHarris(self):
-        harrisFrame = self.img
+        harrisFrame = self.frame
         nframe = cv2.cvtColor(harrisFrame, cv2.COLOR_BGR2GRAY)
         nframe = np.float32(nframe)
         dst = cv2.cornerHarris(nframe, 2, 3, 0.04)
@@ -57,7 +57,7 @@ class myScreen:
         cv2.imshow('Harris', harrisFrame)
         return
     def mySIFT(self):
-        siftFrame = self.img
+        siftFrame = self.frame
         siftFrame = cv2.cvtColor(siftFrame, cv2.COLOR_BGR2GRAY)
         sift = cv2.SIFT()
         kp = sift.detect(siftFrame,None)
@@ -66,7 +66,7 @@ class myScreen:
         return
     def myGoodFeaturesToTrack(self):
         count=0
-        goodfeatureFrame = self.img
+        goodfeatureFrame = self.frame
         goodfeatureFrame = cv2.cvtColor(goodfeatureFrame, cv2.COLOR_BGR2GRAY)
         corners = cv2.goodFeaturesToTrack(goodfeatureFrame,10,0.01,10)
         corners = np.int0(corners)
@@ -80,7 +80,7 @@ class myScreen:
         cv2.imshow('goodFeatures', goodfeatureFrame)
         return
     def showScreen(self):
-        rawFrame = self.img
+        rawFrame = self.frame
         cv2.imshow('dst',rawFrame)
     def cvEnd(self):
         (self.cap).release()
