@@ -1,0 +1,102 @@
+/*
+ * this script is only working with 
+ * calculate maximum range of movement
+ * headUnit doesnt have stepmotors
+ */
+
+
+#include "Wire.h"
+#include "I2Cdev.h"
+#include "MPU6050.h"
+#include "TFMini.h"
+
+#include <Servo.h>
+#include <SoftwareSerial.h>
+
+// AD0 low = 0x68 (default for InvenSense evaluation board)
+// AD0 high = 0x69
+
+SoftwareSerial mySerial(10, 11);
+
+MPU6050 accelgyro;
+TFMini tfmini;
+Servo servoPin32, servoPin33;
+
+#define pinServo (inChar - 32)
+#define servoNumber 3;
+
+struct headServo{
+  //pitch, yaw, roll
+  //muscle front L/R
+  //jaw
+  
+}
+
+uint16_t dist;
+uint16_t strength;
+
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
+int16_t mx, my, mz;
+
+char inChar;
+
+void setup() {
+  Wire.begin();
+
+  // initialize serial communication
+  // (38400 chosen because it works as well at 8MHz as it does at 16MHz, but
+  // it's really up to you depending on your project)
+  Serial.begin(19200);
+  Serial.println("Initializing I2C devices...");
+  accelgyro.initialize();
+  Serial.println("Testing device connections...");
+  Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+
+  mySerial.begin(115200);
+  tfmini.begin(&mySerial);
+
+  servoPin32.attach(32);
+  servoPin33.attach(33);
+}
+
+/*
+ * sending servo positions, when working servos every 500 microseconds
+ * i can gettinng a potisions of head unit
+ * and must expect of result of servo movement
+ */
+void loop() {
+  delay(50);
+  //accel, gyro, magnetic
+  if (Serial.available()) {
+    myValue();
+    inChar = Serial.read();
+    if (inChar >= 36 && inChar <= 45) {
+      
+    } else {
+      
+    }
+    Serial.println (pinServo);
+  } else {
+    myValue();
+  }
+}
+
+
+void myValue() {
+    accelgyro.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
+    dist = tfmini.getDistance();
+    Serial.print("_ax");Serial.print(ax);
+    Serial.print("ay");Serial.print(ay);
+    Serial.print("az");Serial.print(az);
+    Serial.print("gx");Serial.print(gx);
+    Serial.print("gy");Serial.print(gy);
+    Serial.print("gz");Serial.print(gz);
+    Serial.print("di"); Serial.print(dist);
+    Serial.println("F");
+}
+
+void servoWorker() {
+  servoPin32.writeMicroseconds(800);
+  servoPin33.writeMicroseconds(800);
+}
