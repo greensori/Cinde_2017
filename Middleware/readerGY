@@ -1,0 +1,57 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb 17 01:08:12 2018
+
+@author: BluePC
+"""
+
+import serial
+import numpy as np
+import time
+
+class mySerial:
+    def __init__(self, **kwards):
+        port = kwards.get('port', 'COM4')
+        baudrate = kwards.get('baudrate', 19200)
+        self.ard = serial.Serial(port, baudrate)
+    def getMsg(self):
+        ard = (self.ard)
+        while True:
+            msg = None
+            msg = ard.read(ard.inWaiting())[:-2]
+            if msg:
+                print (msg)
+            else:
+                print ('no msg')
+
+def inputGY():
+    gyInput = np.zeros((6,), dtype = np.int)
+    print gyInput
+    indexWord = ['ay', 'az', 'gx', 'gy', 'gz', 'F']
+    # myard = mySerial()
+    # myard.getMsg()
+    ard = serial.Serial('COM4', 19200)
+    while True:
+        stime = time.time()
+        time.sleep(0.05)
+        msg = None
+        msg = ard.read(ard.inWaiting())[:-2]
+        count = 0
+        sindex = 3
+        eindex = None
+        try:
+            if msg.index('ax') and msg.index('F'):
+                for i in indexWord:
+                    eindex = int(msg.index(i))
+                    gyInput[count] = msg[sindex:eindex]
+                    sindex = (eindex + 2)
+                    count = count + 1
+                print gyInput
+        except:
+            pass
+        print ('complete in %s time' %str(time.time() - stime))
+
+#if there is no input values on here then using previous value
+
+if __name__ == '__main__':
+    inputGY() # this return gyroscope values
